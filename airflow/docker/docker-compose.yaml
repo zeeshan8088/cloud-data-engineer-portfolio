@@ -16,9 +16,11 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/certificates/airflow-bigquery-key.json
     volumes:
       - ./dags:/opt/airflow/dags
       - ../../projects:/opt/airflow/projects
+      - ../../certificates:/opt/airflow/certificates
     ports:
       - "8080:8080"
     command: webserver
@@ -31,9 +33,11 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/certificates/airflow-bigquery-key.json
     volumes:
       - ./dags:/opt/airflow/dags
       - ../../projects:/opt/airflow/projects
+      - ../../certificates:/opt/airflow/certificates
     command: scheduler
 
 volumes:
