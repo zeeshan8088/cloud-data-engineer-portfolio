@@ -38,3 +38,40 @@
         │ Bitcoin Analytics   │
         │ Aggregated Insights │
         └─────────────────────┘
+
+
+
+        # Data Engineering Pipeline Architecture
+
+This project implements a modern data engineering pipeline designed to ingest, orchestrate, and analyze cryptocurrency market data.
+
+Architecture Overview
+
+Public API (CoinGecko)
+        │
+        ▼
+Python Extraction Script
+        │
+        ▼
+Raw Data Layer (JSON files)
+        │
+        ▼
+Apache Airflow DAG
+        │
+        ▼
+BigQuery Raw Table
+        │
+        ▼
+SQL Transformation Layer
+        │
+        ▼
+Analytics Table
+
+Technology Stack
+
+Python
+Apache Airflow
+Docker
+Google BigQuery
+SQL
+Git
