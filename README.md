@@ -1,4 +1,11 @@
 Cloud Data Engineering Pipeline — Airflow + BigQuery
+
+![Python](https://img.shields.io/badge/Python-3.8-blue)
+![Apache Airflow](https://img.shields.io/badge/Apache%20Airflow-Orchestration-red)
+![BigQuery](https://img.shields.io/badge/Google%20BigQuery-Data%20Warehouse-yellow)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
+![SQL](https://img.shields.io/badge/SQL-Analytics-green)
+
 Overview
 
 This project demonstrates the implementation of a modern data engineering pipeline designed to ingest, orchestrate, store, and analyze cryptocurrency market data using industry-standard tooling.
