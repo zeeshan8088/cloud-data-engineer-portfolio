@@ -1,0 +1,40 @@
+                ┌───────────────────────┐
+                │   CoinGecko API       │
+                │  (Bitcoin Price)      │
+                └───────────┬───────────┘
+                            │
+                            ▼
+                 ┌────────────────────┐
+                 │  Apache Airflow    │
+                 │  DAG Orchestration │
+                 └───────────┬────────┘
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+                ▼                         ▼
+      Extract API Data          Retry + Logging Layer
+                │
+                ▼
+      ┌───────────────────────┐
+      │     Data Lake Layer   │
+      │  Local Storage Layer  │
+      │ (data_lake/api_data)  │
+      └───────────┬───────────┘
+                  │
+                  ▼
+        ┌─────────────────────┐
+        │   Google BigQuery   │
+        │   Raw Ingestion     │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ SQL Transformation  │
+        │ Analytics Layer     │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ Bitcoin Analytics   │
+        │ Aggregated Insights │
+        └─────────────────────┘

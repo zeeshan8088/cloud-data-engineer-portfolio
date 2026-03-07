@@ -1,2 +1,13 @@
 airflow-venv/
 projects/day4_pipeline/output.json
+# credentials
+certificates/*.json
+*.json.key
+service-account*.json
+
+# python cache
+__pycache__/
+*.pyc
+
+# airflow logs
+logs/
