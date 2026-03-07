@@ -145,4 +145,9 @@ Implementing data quality validation checks
 
 Introducing dbt for transformation management
 
-Adding monitoring and alerting integration
+Adding monitoring and alerting integrations
+## Airflow Pipeline DAG
+
+Below is the orchestration flow of the data pipeline managed by Apache Airflow.
+
+![Airflow DAG](architecture/dag_pipeline.png)
