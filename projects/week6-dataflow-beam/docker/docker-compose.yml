@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+
+  # Service 1: Run local batch pipeline (Day 2-3)
+  beam-local:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: beam-local-pipeline
+    volumes:
+      # Mount local folders INTO container
+      # Left side = your Windows path, Right side = container path
+      - ../data:/pipeline/data
+      - ../output:/pipeline/output
+      - ../local_pipelines:/pipeline/local_pipelines
+      - ../scripts:/pipeline/scripts
+      # Mount GCP credentials
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/gcp_key.json
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_key.json
+      - GCP_PROJECT=intricate-ward-459513-e1
+      - GCP_REGION=us-central1
+    command: python local_pipelines/hospital_batch_pipeline.py
+
+  # Service 2: Interactive shell for debugging
+  beam-shell:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: beam-shell
+    volumes:
+      - ../data:/pipeline/data
+      - ../output:/pipeline/output
+      - ../local_pipelines:/pipeline/local_pipelines
+      - ../scripts:/pipeline/scripts
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/gcp_key.json
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_key.json
+      - GCP_PROJECT=intricate-ward-459513-e1
+      - GCP_REGION=us-central1
+    entrypoint: /bin/bash
+    stdin_open: true
+    tty: true
