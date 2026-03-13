@@ -1,14 +1,9 @@
 """
-Week 6 - Day 5: Hospital Streaming Pipeline
-Upgrades Day 4 with:
-- Watermarks + allowed lateness (handle late arriving data)
-- Sliding windows (rolling 3-min view, updated every 1 min)
-- TagLateEvents DoFn (data quality pattern)
-
-Key concepts:
-- Watermark: Beam's best guess of event time progress
-- Allowed lateness: still accept events up to 2 min after window closes
-- Sliding windows: overlapping windows for rolling aggregations
+Week 6 - Day 6: Hospital Streaming Pipeline
+Upgrades Day 5 with:
+- BigQuery sink for fixed window stats → windowed_admissions
+- BigQuery sink for sliding window stats → sliding_admissions
+- Proper TIMESTAMP formatting for BigQuery
 """
 
 import os
@@ -32,9 +27,9 @@ from apache_beam.options.pipeline_options import (
 )
 from apache_beam.transforms.window import FixedWindows, SlidingWindows
 from apache_beam.transforms.trigger import (
-    AfterWatermark, AfterProcessingTime,
-    AfterCount, AccumulationMode
+    AfterWatermark, AfterCount, AccumulationMode
 )
+from apache_beam.io.gcp.bigquery import WriteToBigQuery, BigQueryDisposition
 import json
 import hashlib
 from datetime import datetime
@@ -45,39 +40,21 @@ from datetime import datetime
 # ============================================================
 
 class ParseAdmissionEvent(beam.DoFn):
-    """
-    Pub/Sub delivers messages as raw bytes.
-    We decode and parse them into Python dicts.
-    Think of it like opening an envelope and reading the letter.
-    """
     VALID_TAG   = "valid"
     INVALID_TAG = "invalid"
 
     def process(self, element):
         try:
             message = json.loads(element.decode("utf-8"))
-
             if not message.get("hospital_id"):
-                yield beam.pvalue.TaggedOutput(self.INVALID_TAG, {
-                    "raw": str(element),
-                    "error": "missing_hospital_id"
-                })
+                yield beam.pvalue.TaggedOutput(self.INVALID_TAG, {"raw": str(element), "error": "missing_hospital_id"})
                 return
-
             if not message.get("severity"):
-                yield beam.pvalue.TaggedOutput(self.INVALID_TAG, {
-                    "raw": str(element),
-                    "error": "missing_severity"
-                })
+                yield beam.pvalue.TaggedOutput(self.INVALID_TAG, {"raw": str(element), "error": "missing_severity"})
                 return
-
             yield beam.pvalue.TaggedOutput(self.VALID_TAG, message)
-
         except Exception as e:
-            yield beam.pvalue.TaggedOutput(self.INVALID_TAG, {
-                "raw": str(element)[:200],
-                "error": str(e)
-            })
+            yield beam.pvalue.TaggedOutput(self.INVALID_TAG, {"raw": str(element)[:200], "error": str(e)})
 
 
 # ============================================================
@@ -85,19 +62,10 @@ class ParseAdmissionEvent(beam.DoFn):
 # ============================================================
 
 class EnrichAdmissionEvent(beam.DoFn):
-    """
-    Add derived fields to each admission event.
-    Same concept as Day 2 enrichment — just on streaming data.
-    """
-    SEVERITY_SCORES = {
-        "LOW": 1, "MEDIUM": 2, "HIGH": 3, "CRITICAL": 4
-    }
+    SEVERITY_SCORES = {"LOW": 1, "MEDIUM": 2, "HIGH": 3, "CRITICAL": 4}
 
     def process(self, element):
-        severity_score = self.SEVERITY_SCORES.get(
-            element.get("severity", "LOW"), 1
-        )
-
+        severity_score    = self.SEVERITY_SCORES.get(element.get("severity", "LOW"), 1)
         raw_patient_id    = element.get("patient_id", "")
         masked_patient_id = hashlib.sha256(
             f"salt_zeeshan_{raw_patient_id}".encode()
@@ -109,7 +77,7 @@ class EnrichAdmissionEvent(beam.DoFn):
             "patient_id_masked": masked_patient_id,
             "is_critical":       element.get("severity") == "CRITICAL",
             "processed_at":      datetime.utcnow().isoformat(),
-            "pipeline_version":  "streaming_v2.0",
+            "pipeline_version":  "streaming_v3.0",
         }
 
 
@@ -118,31 +86,22 @@ class EnrichAdmissionEvent(beam.DoFn):
 # ============================================================
 
 class ComputeWindowStats(beam.DoFn):
-    """
-    Called once per (hospital, window) combination.
-    Input:  ("H001", [event1, event2, event3, ...])
-    Output: one summary record with counts and stats
-    """
-
     def process(self, element, window=beam.DoFn.WindowParam):
         hospital_id = element[0]
         events      = list(element[1])
-
         if not events:
             return
 
-        window_start = datetime.utcfromtimestamp(float(window.start)).isoformat()
-        window_end   = datetime.utcfromtimestamp(float(window.end)).isoformat()
+        # BigQuery expects TIMESTAMP as "YYYY-MM-DD HH:MM:SS UTC"
+        window_start = datetime.utcfromtimestamp(float(window.start)).strftime("%Y-%m-%d %H:%M:%S UTC")
+        window_end   = datetime.utcfromtimestamp(float(window.end)).strftime("%Y-%m-%d %H:%M:%S UTC")
 
         total_admissions = len(events)
         critical_count   = sum(1 for e in events if e.get("is_critical"))
         high_count       = sum(1 for e in events if e.get("severity") == "HIGH")
-        avg_severity     = sum(
-            e.get("severity_score", 1) for e in events
-        ) / total_admissions
-
-        is_surge     = total_admissions > 5
-        sample_event = events[0]
+        avg_severity     = sum(e.get("severity_score", 1) for e in events) / total_admissions
+        is_surge         = total_admissions > 5
+        sample_event     = events[0]
 
         yield {
             "hospital_id":        hospital_id,
@@ -156,48 +115,8 @@ class ComputeWindowStats(beam.DoFn):
             "avg_severity_score": round(avg_severity, 2),
             "is_surge":           is_surge,
             "surge_reason":       f"{total_admissions} admissions in window" if is_surge else "",
-            "computed_at":        datetime.utcnow().isoformat(),
+            "computed_at":        datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
         }
-
-
-# ============================================================
-# TRANSFORM 4: Tag late arriving events  — NEW Day 5
-# ============================================================
-
-class TagLateEvents(beam.DoFn):
-    """
-    Separates on-time events from late-arriving events.
-    Late events need special handling in production —
-    reprocessing aggregations, alerting data quality teams,
-    or storing separately for audit purposes.
-    """
-    ONTIME_TAG = "ontime"
-    LATE_TAG   = "late"
-
-    def process(self, element, window=beam.DoFn.WindowParam):
-        event_time_str = element.get("timestamp", "")
-
-        try:
-            from datetime import timezone
-            event_dt = datetime.fromisoformat(
-                event_time_str.replace("Z", "+00:00")
-            )
-
-            if event_dt.timestamp() < float(window.end):
-                delay_seconds = float(window.end) - event_dt.timestamp()
-                yield beam.pvalue.TaggedOutput(self.LATE_TAG, {
-                    **element,
-                    "delay_seconds": round(delay_seconds, 2),
-                    "late_reason":   f"Event arrived {round(delay_seconds)}s after window close",
-                    "window_end":    datetime.utcfromtimestamp(
-                        float(window.end)
-                    ).isoformat(),
-                })
-                return
-        except Exception:
-            pass
-
-        yield beam.pvalue.TaggedOutput(self.ONTIME_TAG, element)
 
 
 # ============================================================
@@ -205,28 +124,28 @@ class TagLateEvents(beam.DoFn):
 # ============================================================
 
 def print_window_result(record):
-    """Pretty print fixed window results."""
     surge = "*** SURGE DETECTED ***" if record.get("is_surge") else "Normal"
     print(
         f"\n{'='*52}\n"
         f"  [FIXED WINDOW] {record['hospital_name']}\n"
-        f"  Period  : {record['window_start'][11:]} -> {record['window_end'][11:]}\n"
+        f"  Period  : {record['window_start']} -> {record['window_end']}\n"
         f"  Total   : {record['total_admissions']} admissions\n"
         f"  Critical: {record['critical_count']} | High: {record['high_count']}\n"
         f"  Avg Sev : {record['avg_severity_score']} | {surge}\n"
+        f"  → Written to BQ: hospital_streaming.windowed_admissions\n"
         f"{'='*52}"
     )
     return record
 
 
 def print_sliding_result(record):
-    """Pretty print sliding window results."""
     surge = " <-- SURGE" if record.get("is_surge") else ""
     print(
         f"  [SLIDING] {record['hospital_name']:<25}"
         f" | {record['window_start'][11:16]}->{record['window_end'][11:16]}"
         f" | {record['total_admissions']:3d} admissions"
         f" | avg sev: {record['avg_severity_score']}{surge}"
+        f" → BQ"
     )
     return record
 
@@ -236,15 +155,19 @@ def print_sliding_result(record):
 # ============================================================
 
 def run_streaming_pipeline():
-    PROJECT = "intricate-ward-459513-e1"
-    REGION  = "us-west1"
-    BUCKET  = "zeeshan-hospital-pipeline"
-    STAGING = f"gs://{BUCKET}/staging"
-    TEMP    = f"gs://{BUCKET}/temp"
+    PROJECT  = "intricate-ward-459513-e1"
+    REGION   = "us-west1"
+    BUCKET   = "zeeshan-hospital-pipeline"
+    DATASET  = "hospital_streaming"
+    STAGING  = f"gs://{BUCKET}/staging"
+    TEMP     = f"gs://{BUCKET}/temp"
+
+    BQ_FIXED   = f"{PROJECT}:{DATASET}.windowed_admissions"
+    BQ_SLIDING = f"{PROJECT}:{DATASET}.sliding_admissions"
 
     print("=" * 52)
-    print("  HOSPITAL STREAMING PIPELINE - Day 5")
-    print("  Watermarks + Allowed Lateness + Sliding Windows")
+    print("  HOSPITAL STREAMING PIPELINE - Day 6")
+    print("  BigQuery Sink: windowed_admissions + sliding_admissions")
     print("=" * 52)
 
     options = PipelineOptions()
@@ -254,8 +177,8 @@ def run_streaming_pipeline():
     gcp_options.region           = REGION
     gcp_options.staging_location = STAGING
     gcp_options.temp_location    = TEMP
-    gcp_options.job_name         = "hospital-streaming-zeeshan-d5"
-    os.environ["BEAM_RUNNER"] = "DirectRunner"
+    gcp_options.job_name         = "hospital-streaming-zeeshan-d6"
+
     options.view_as(StandardOptions).runner    = "DirectRunner"
     options.view_as(StandardOptions).streaming = True
     options.view_as(SetupOptions).save_main_session = True
@@ -293,33 +216,22 @@ def run_streaming_pipeline():
         (
             enriched_events
             | "Log Events" >> beam.Map(
-                lambda e: print(
-                    f"  EVENT: {e['hospital_id']} | {e['severity']:<8} | {e['condition']}"
-                )
+                lambda e: print(f"  EVENT: {e['hospital_id']} | {e['severity']:<8} | {e['condition']}")
             )
         )
 
-        # ── FIXED WINDOWS WITH WATERMARK + ALLOWED LATENESS ─
-        # Day 5 upgrade from Day 4:
-        # - AfterWatermark trigger fires when watermark passes window end
-        # - allowed_lateness=120s accepts events up to 2 min late
-        # - ACCUMULATING mode: late events add to existing results
+        # ── FIXED WINDOWS ──────────────────────────────────
         windowed_fixed = (
             enriched_events
-            | "Fixed Windows + Watermark" >> beam.WindowInto(
+            | "Fixed Windows" >> beam.WindowInto(
                 FixedWindows(5 * 60),
-                trigger=AfterWatermark(
-                    late=AfterCount(1)
-                ),
+                trigger=AfterWatermark(late=AfterCount(1)),
                 allowed_lateness=2 * 60,
                 accumulation_mode=AccumulationMode.ACCUMULATING,
             )
         )
 
         # ── SLIDING WINDOWS ────────────────────────────────
-        # Window size: 3 minutes, slide every 1 minute
-        # Gives a rolling "last 3 minutes" view updated every minute
-        # Perfect for real-time hospital dashboards
         windowed_sliding = (
             enriched_events
             | "Sliding Windows" >> beam.WindowInto(
@@ -327,22 +239,40 @@ def run_streaming_pipeline():
             )
         )
 
-        # ── FIXED WINDOW STATS ─────────────────────────────
-        (
+        # ── FIXED WINDOW STATS → CONSOLE + BIGQUERY ────────
+        fixed_stats = (
             windowed_fixed
-            | "Key Fixed by Hospital"    >> beam.Map(lambda e: (e["hospital_id"], e))
-            | "Group Fixed by Hospital"  >> beam.GroupByKey()
-            | "Compute Fixed Stats"      >> beam.ParDo(ComputeWindowStats())
-            | "Print Fixed Stats"        >> beam.Map(print_window_result)
+            | "Key Fixed by Hospital"   >> beam.Map(lambda e: (e["hospital_id"], e))
+            | "Group Fixed by Hospital" >> beam.GroupByKey()
+            | "Compute Fixed Stats"     >> beam.ParDo(ComputeWindowStats())
+            | "Print Fixed Stats"       >> beam.Map(print_window_result)
         )
 
-        # ── SLIDING WINDOW STATS ───────────────────────────
         (
+            fixed_stats
+            | "Write Fixed to BQ" >> WriteToBigQuery(
+                table=BQ_FIXED,
+                write_disposition=BigQueryDisposition.WRITE_APPEND,
+                create_disposition=BigQueryDisposition.CREATE_NEVER,
+            )
+        )
+
+        # ── SLIDING WINDOW STATS → CONSOLE + BIGQUERY ──────
+        sliding_stats = (
             windowed_sliding
             | "Key Sliding by Hospital"   >> beam.Map(lambda e: (e["hospital_id"], e))
             | "Group Sliding by Hospital" >> beam.GroupByKey()
             | "Compute Sliding Stats"     >> beam.ParDo(ComputeWindowStats())
             | "Print Sliding Stats"       >> beam.Map(print_sliding_result)
+        )
+
+        (
+            sliding_stats
+            | "Write Sliding to BQ" >> WriteToBigQuery(
+                table=BQ_SLIDING,
+                write_disposition=BigQueryDisposition.WRITE_APPEND,
+                create_disposition=BigQueryDisposition.CREATE_NEVER,
+            )
         )
 
     print("Pipeline stopped.")
