@@ -19,6 +19,7 @@ import time
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+from google.cloud import storage as gcs
 
 # Load environment variables from .env file
 load_dotenv()
@@ -29,12 +30,36 @@ from src.llm_summarizer import get_anomaly_explanation
 from src.bq_writer import write_to_bigquery
 
 # ── Config ────────────────────────────────────────────────
+# In Cloud Run, data comes from GCS
+# Locally, falls back to local CSV if GCS_BUCKET not set
+GCS_BUCKET  = os.environ.get("GCS_BUCKET", "")
+GCS_BLOB    = "ecommerce/sample_orders.csv"
 DATA_PATH   = os.path.join("data", "sample_orders.csv")
 REPORT_PATH = os.path.join("data", "quality_report.txt")
 
 # Pause between Gemini API calls to avoid rate limits
 API_CALL_DELAY = 3
+def get_data_path() -> str:
+    """
+    Returns the path to the orders CSV.
+    In Cloud Run: downloads from GCS to /tmp/sample_orders.csv
+    Locally: uses local data/sample_orders.csv directly
 
+    Think of /tmp as a scratchpad inside the container —
+    it exists only during the job run, then disappears.
+    """
+    if GCS_BUCKET:
+        print(f"☁️  Downloading orders from GCS: gs://{GCS_BUCKET}/{GCS_BLOB}")
+        client = gcs.Client()
+        bucket = client.bucket(GCS_BUCKET)
+        blob = bucket.blob(GCS_BLOB)
+        tmp_path = "/tmp/sample_orders.csv"
+        blob.download_to_filename(tmp_path)
+        print(f"   ✅ Downloaded to {tmp_path}")
+        return tmp_path
+    else:
+        print(f"💻 Running locally — using: {DATA_PATH}")
+        return DATA_PATH
 
 # ── Report builder ────────────────────────────────────────
 def build_report_header(anomaly_count: int) -> str:
@@ -67,8 +92,9 @@ def run_pipeline():
     print("=" * 65)
 
     # ── Step 1: Detect anomalies ──────────────────────────
-    print(f"\n📂 Loading orders from: {DATA_PATH}")
-    anomalies = detect_anomalies(DATA_PATH)
+    csv_path = get_data_path()
+    print(f"\n📂 Loading orders from: {csv_path}")
+    anomalies = detect_anomalies(csv_path)
     print(f"🚨 Detected {len(anomalies)} anomalies — sending to Gemini...\n")
 
     if not anomalies:
