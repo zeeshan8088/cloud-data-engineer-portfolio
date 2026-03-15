@@ -1,6 +1,6 @@
 =================================================================
   AI DATA QUALITY REPORT — E-commerce Orders Pipeline
-  Generated: 2026-03-15 09:22:23
+  Generated: 2026-03-15 09:36:55
   Total anomalies detected: 14
 =================================================================
 
@@ -10,7 +10,7 @@
    Order ID ORD-0187 has a negative order amount of -748.56 INR with quantity 3. Customer ID C-9153.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly strongly suggests a refund or return for three items was mistakenly processed as a new negative order entry, rather than being linked to an original purchase or recorded in a dedicated returns log. A data engineer should trace this transaction to its source to correctly classify and reconcile the record, then implement data validation to prevent similar miscategorizations of returns within the orders dataset going forward.
+   The negative order amount (-748.56 INR) for a positive quantity (3) likely indicates a data entry error or a misclassified transaction, where a refund, return, or adjustment was incorrectly recorded as a new order with a negative value instead of a distinct transaction type. The data engineer should investigate the source system for Order ID ORD-0187 and Customer C-9153 to determine the true nature of this record, correct the amount, and implement validation rules to prevent negative order amounts for new orders.
 
 [2] ZERO_AMOUNT_HIGH_QTY — ORD-0191
 -----------------------------------------------------------------
@@ -18,7 +18,7 @@
    Order ID ORD-0191 has a quantity of 9999 and an order amount of 0.00 INR. Product ID PROD-045.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly likely indicates a system or integration error where default or placeholder values (9999, 0.00 INR) were populated due to a failure in retrieving actual transaction details for product PROD-045. A data engineer should investigate application and integration logs from the order creation time to identify the root cause, correct the order record, and implement robust validation to prevent future occurrences of illogical quantities and amounts.
+   This anomaly, with a quantity of 9999 and an amount of 0.00 INR, strongly suggests a system test order, a data entry error, or a default value being inserted when an order fails or is malformed. A data engineer should investigate the order's origin and associated logs to pinpoint the precise root cause, then exclude this record from analytical datasets and implement robust validation rules to prevent similar occurrences.
 
 [3] NEGATIVE_AMOUNT — ORD-0188
 -----------------------------------------------------------------
@@ -26,7 +26,7 @@
    Order ID ORD-0188 has a negative order amount of -926.88 INR with quantity 5. Customer ID C-1153.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly indicates a likely system calculation error where a refund, credit, or discount was incorrectly applied, resulting in a negative total amount for an order that still has a positive quantity of items. A data engineer should investigate the transaction history for ORD-0188 to pinpoint the exact calculation flaw and implement robust data validation rules to prevent negative order totals in the future.
+   This anomaly likely indicates a refund or a credit memo that was mistakenly recorded as a negative value in the `order_amount` field instead of being categorized under a specific refund type or using a separate `refund_amount` field. A data engineer should investigate the full transaction history for Order ID ORD-0188 to confirm its true nature (e.g., refund, cancellation), correct the specific record in the dataset, and implement data validation rules to prevent negative `order_amount` values for sales, ensuring refunds are processed in a separate field or with a dedicated transaction type.
 
 [4] NEGATIVE_AMOUNT — ORD-0186
 -----------------------------------------------------------------
@@ -34,9 +34,7 @@
    Order ID ORD-0186 has a negative order amount of -386.49 INR with quantity 3. Customer ID C-3950.
 
 🤖 GEMINI ANALYSIS:
-   This negative order amount with quantity 3 strongly suggests a processed refund or return transaction that was improperly recorded as a direct negative order amount instead of a distinct refund type or credit memo. This often indicates a downstream system misinterpretation or an integration error where a return value was mapped incorrectly to the primary order amount field.
-
-A data engineer should investigate the order's full transaction history to confirm if it's a refund and collaborate with the finance team to understand the business intent. They should then implement data validation rules to prevent negative order amounts for new purchases and ensure refunds are consistently tracked as separate transaction types or credit adjustments.
+   This negative order amount for ORD-0186, coupled with a positive quantity, likely originates from an incorrect refund or return process that misapplied a credit directly to the `order_amount` field, or a simple data entry error. A data engineer should investigate the specific transaction logs for this order to identify the precise cause, correct the data, and implement upstream data validation to prevent such anomalies from occurring again.
 
 [5] NEGATIVE_AMOUNT — ORD-0189
 -----------------------------------------------------------------
@@ -44,7 +42,9 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0189 has a negative order amount of -163.15 INR with quantity 7. Customer ID C-5901.
 
 🤖 GEMINI ANALYSIS:
-   This negative order amount likely indicates a misclassification where a refund, return, or significant discount was incorrectly processed or recorded as a negative order total instead of being logged as a separate transaction type or adjustment. A data engineer should investigate the full transaction history for Order ID ORD-0189 to identify the actual purchase and subsequent refund event, then correct the `order_amount` field to reflect the positive purchase value and ensure future negative adjustments are properly attributed to a dedicated refund or credit field.
+   This anomaly likely indicates a data entry error or a system bug where a refund or cancellation was incorrectly recorded as a new order with an inverted amount in the `orders` dataset. The presence of `quantity 7` further suggests it might represent items returned, but it is inappropriately classified as an initial order with a negative total.
+
+A data engineer should investigate the transaction's origin for customer C-5901 to determine if it's a misclassified refund or genuine data corruption, then correct the entry by reclassifying or linking it, and implement data validation rules to prevent negative order amounts at ingestion.
 
 [6] MISSING_CUSTOMER_ID — ORD-0197
 -----------------------------------------------------------------
@@ -52,7 +52,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0197 has a missing or empty customer ID. Order amount: 4571.76 INR, Product ID: PROD-034.
 
 🤖 GEMINI ANALYSIS:
-   This missing customer ID for ORD-0197 likely originated from a data entry error during order creation or an integration failure from an upstream system that did not correctly map the customer ID. A data engineer should investigate the specific order's origin and logs to identify the root cause, attempt to backfill the correct customer ID, and implement stricter validation to prevent similar occurrences.
+   This anomaly likely occurred due to a guest checkout, where the customer completed the purchase without logging in or creating an account, resulting in a missing customer ID. A data engineer should investigate the order's origin and logs to confirm this scenario, then either assign a generic guest customer ID or, if an error, identify and link the correct customer ID, while also reviewing data validation rules to prevent similar recurrences.
 
 [7] ZERO_AMOUNT_HIGH_QTY — ORD-0190
 -----------------------------------------------------------------
@@ -60,7 +60,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0190 has a quantity of 9999 and an order amount of 0.00 INR. Product ID PROD-031.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly likely stems from a data entry error or a system default value being incorrectly applied, possibly due to missing product pricing for PROD-031 or a bug in the order calculation logic. The data engineer should immediately investigate the order's origin to determine the root cause, correct or remove the invalid record, and implement robust data validation checks to prevent similar illogical quantities and zero amounts from entering the dataset.
+   This anomaly likely indicates a test order or a system integration issue where default or placeholder values of 9999 for quantity and 0.00 INR for amount were recorded for Order ID ORD-0190. A data engineer should investigate the order's creation source in application logs, correct the data if it's an erroneous live order, and implement stricter data validation rules at the point of ingestion to prevent such invalid entries from reaching the dataset.
 
 [8] FUTURE_TIMESTAMP — ORD-0195
 -----------------------------------------------------------------
@@ -68,7 +68,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0195 has an order timestamp of 2085-02-16 00:00:00, which is in the future. Customer ID C-8222.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly likely stems from a manual data entry error or an underlying application bug that allowed a future timestamp to be recorded for ORD-0195. A data engineer should investigate the true order timestamp by cross-referencing other system logs or related customer activities for C-8222, then correct the erroneous record. Furthermore, robust data validation rules must be implemented at the point of data ingestion or application input to prevent any future dates from being accepted for order timestamps.
+   This anomaly most likely resulted from a data entry typo, where the year 2085 was incorrectly entered instead of a past or present year for order ORD-0195. A data engineer should investigate the source system for this specific order to determine the true order timestamp and correct it, subsequently implementing input validation to prevent future dates for order timestamps.
 
 [9] MISSING_CUSTOMER_ID — ORD-0196
 -----------------------------------------------------------------
@@ -76,7 +76,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0196 has a missing or empty customer ID. Order amount: 919.42 INR, Product ID: PROD-048.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly likely stems from either a system bug allowing an order to be processed without a customer ID, or an unhandled guest checkout scenario where no temporary or null ID was appropriately managed. A data engineer should investigate the specific order's origin to identify the root cause, then implement stricter validation rules in the order pipeline to ensure all future orders either have a valid customer ID or are properly marked for guest purchases.
+   This anomaly likely indicates a failure in the order creation process to properly link a customer, potentially due to a guest checkout system not assigning a temporary ID or a transient database write error. A data engineer should investigate the specific order's transaction logs to identify and backfill the correct customer ID, and then implement a `NOT NULL` constraint or pre-ingestion validation on the customer ID field to prevent future occurrences.
 
 [10] MISSING_CUSTOMER_ID — ORD-0198
 -----------------------------------------------------------------
@@ -84,7 +84,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0198 has a missing or empty customer ID. Order amount: 4030.95 INR, Product ID: PROD-019.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly likely stems from a guest checkout process, where customers complete purchases without creating an account, or a data capture error during order submission that failed to link a valid customer ID. A data engineer should investigate the order's origin to confirm the cause, and if it's a systemic issue, implement data validation rules or modify the schema to explicitly handle guest orders to prevent future occurrences.
+   This anomaly likely indicates a guest checkout scenario, where the customer completed the purchase without logging in or creating an account, resulting in an unassigned customer ID for ORD-0198 despite a valid order amount and product. A data engineer should investigate the order's transaction logs to confirm if it was a guest purchase and subsequently implement a standardized process for handling guest orders, such as assigning a dedicated "GUEST" identifier to ensure data consistency.
 
 [11] FUTURE_TIMESTAMP — ORD-0193
 -----------------------------------------------------------------
@@ -92,7 +92,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0193 has an order timestamp of 2085-11-14 00:00:00, which is in the future. Customer ID C-4770.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly in order ORD-0193, showing a future timestamp, most likely stems from a manual data entry error where the year was mistyped, or a system misconfiguration during order creation. A data engineer should immediately investigate the record's origin to determine the correct timestamp, update the order, and then implement a data validation rule to reject future dates for order timestamps going forward.
+   This future order timestamp likely stems from a manual data entry error where the year was mistyped, or it could be test data that was inadvertently pushed to production. A data engineer should investigate the specific order's origin to correct the timestamp and implement data validation rules to prevent future dates from being accepted for order timestamps across the platform.
 
 [12] FUTURE_TIMESTAMP — ORD-0194
 -----------------------------------------------------------------
@@ -100,7 +100,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0194 has an order timestamp of 2085-01-21 00:00:00, which is in the future. Customer ID C-3240.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly was likely caused by a manual data entry error during order creation or a software bug in the system responsible for generating order timestamps, resulting in a future date. A data engineer should investigate the order's specific source system and logs to pinpoint the exact root cause, correct the timestamp for ORD-0194, and implement robust validation to prevent future dates for order timestamps going forward.
+   This anomaly likely stems from a data entry error during order creation or a software bug miscalculating the year, resulting in an impossible future date for ORD-0194. A data engineer should investigate the source system to determine the correct timestamp, rectify the record, and implement a data validation rule to prevent future date entries.
 
 [13] ZERO_AMOUNT_HIGH_QTY — ORD-0192
 -----------------------------------------------------------------
@@ -108,7 +108,7 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0192 has a quantity of 9999 and an order amount of 0.00 INR. Product ID PROD-037.
 
 🤖 GEMINI ANALYSIS:
-   The anomaly for Order ID ORD-0192, with a quantity of 9999 and an order amount of 0.00 INR, strongly indicates a test transaction or a system-generated placeholder value rather than a genuine customer purchase. A data engineer should investigate the order's origin by reviewing application logs and database transaction history to confirm if it's a test entry or data corruption, then flag it as non-commercial or exclude it from sales reporting.
+   This anomaly, featuring an extremely high quantity (9999) and zero order amount, strongly indicates a test order, a system error, or placeholder data being incorrectly populated during order creation or data ingestion, rather than a legitimate customer transaction. A data engineer should investigate the order's origin in the source system to determine if it's internal test data to be ignored or a processing bug requiring a fix. They must then either correct the order details to reflect true values or flag it for exclusion from analytical datasets to prevent skewing reports.
 
 [14] DUPLICATE_ORDER_ID — ORD-0042
 -----------------------------------------------------------------
@@ -116,4 +116,9 @@ A data engineer should investigate the order's full transaction history to confi
    Order ID ORD-0042 appears 3 times in the dataset. This suggests a pipeline retry or double-ingestion issue.
 
 🤖 GEMINI ANALYSIS:
-   This anomaly strongly indicates a lack of idempotency in the data pipeline, where a retry mechanism or a faulty ingestion process led to the same order record for ORD-0042 being inserted multiple times. A data engineer should investigate the specific pipeline stage responsible for the duplication and implement robust deduplication logic at the ingestion layer to prevent future occurrences, followed by a cleanup of existing duplicate records for ORD-0042.
+   The repeated appearance of Order ID ORD-0042 signifies a data pipeline issue, most likely a retry mechanism incorrectly re-inserting the same order, or a bug in the ingestion process leading to duplicate processing. A data engineer should immediately de-duplicate the existing records for ORD-0042 to ensure data integrity, then thoroughly investigate the responsible ingestion pipeline to identify and fix the underlying cause preventing future occurrences.
+
+=================================================================
+  BigQuery Run ID: run_20260315_040651_5789d1
+  Table: intricate-ward-459513-e1.ecommerce_quality_monitor.anomaly_reports
+=================================================================

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------
 # Purpose: Main pipeline coordinator for the AI Quality
 #          Monitor. Wires together data loading, anomaly
-#          detection, and LLM explanation into one flow.
+#          detection, LLM explanation, and BigQuery storage.
 #
 # Run this file to execute the full pipeline:
 #   python pipeline.py
@@ -11,8 +11,8 @@
 #   1. Load e-commerce orders from CSV
 #   2. Detect all anomalous rows
 #   3. Send each anomaly to Gemini for explanation
-#   4. Print a full quality report
-#   5. Save report to data/quality_report.txt
+#   4. Write all results to BigQuery
+#   5. Print + save full quality report
 # ----------------------------------------------------------
 
 import time
@@ -21,26 +21,23 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-# This picks up your GEMINI_API_KEY automatically
 load_dotenv()
 
-# Import our three specialist modules
+# Import our specialist modules
 from src.detect_anomalies import detect_anomalies
 from src.llm_summarizer import get_anomaly_explanation
+from src.bq_writer import write_to_bigquery
 
 # ── Config ────────────────────────────────────────────────
-DATA_PATH    = os.path.join("data", "sample_orders.csv")
-REPORT_PATH  = os.path.join("data", "quality_report.txt")
+DATA_PATH   = os.path.join("data", "sample_orders.csv")
+REPORT_PATH = os.path.join("data", "quality_report.txt")
 
-# Pause between Gemini API calls (seconds)
-# This prevents hitting rate limits — like waiting between
-# phone calls to a busy call centre
+# Pause between Gemini API calls to avoid rate limits
 API_CALL_DELAY = 3
 
 
 # ── Report builder ────────────────────────────────────────
 def build_report_header(anomaly_count: int) -> str:
-    """Build the top section of the quality report."""
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return (
         f"{'=' * 65}\n"
@@ -52,7 +49,6 @@ def build_report_header(anomaly_count: int) -> str:
 
 
 def build_anomaly_block(index: int, anomaly: dict, explanation: str) -> str:
-    """Format one anomaly + its Gemini explanation as a report block."""
     return (
         f"\n[{index}] {anomaly['anomaly_type']} — {anomaly['order_id']}\n"
         f"{'-' * 65}\n"
@@ -65,11 +61,6 @@ def build_anomaly_block(index: int, anomaly: dict, explanation: str) -> str:
 
 # ── Main pipeline ─────────────────────────────────────────
 def run_pipeline():
-    """
-    Execute the full AI quality monitor pipeline.
-    Detects anomalies, gets Gemini explanations,
-    prints report, and saves to file.
-    """
 
     print("\n" + "=" * 65)
     print("  AI QUALITY MONITOR PIPELINE — Starting")
@@ -85,9 +76,11 @@ def run_pipeline():
         return
 
     # ── Step 2: Get Gemini explanations ───────────────────
-    # Process one at a time with a delay to avoid rate limits
+    # We now collect results into a list as we go.
+    # Each item: {"anomaly": ..., "explanation": ...}
+    # This list is what we'll hand to bq_writer at the end.
+    results = []
     report_blocks = []
-    report_header = build_report_header(len(anomalies))
 
     for i, anomaly in enumerate(anomalies, start=1):
         print(f"  [{i}/{len(anomalies)}] Analysing {anomaly['order_id']} "
@@ -95,36 +88,49 @@ def run_pipeline():
 
         try:
             explanation = get_anomaly_explanation(anomaly["description"])
-            block = build_anomaly_block(i, anomaly, explanation)
-            report_blocks.append(block)
-            print(f"         ✅ Done")
+            status = "✅ Done"
 
         except Exception as e:
-            # If one Gemini call fails, log it and continue
-            # Don't let one failure stop the entire pipeline
-            # This is called "fault tolerance" — a key production pattern
-            error_msg = f"   ⚠️  Gemini call failed: {str(e)}"
-            block = build_anomaly_block(i, anomaly, error_msg)
-            report_blocks.append(block)
-            print(f"         ⚠️  Failed: {e}")
+            explanation = f"Gemini call failed: {str(e)}"
+            status = f"⚠️  Failed"
 
-        # Rate limiting pause — skip after the last item
+        # Collect for BigQuery — always append even if failed
+        results.append({
+            "anomaly":     anomaly,
+            "explanation": explanation
+        })
+
+        # Collect for text report
+        block = build_anomaly_block(i, anomaly, explanation)
+        report_blocks.append(block)
+
+        print(f"         {status}")
+
+        # Rate limiting pause
         if i < len(anomalies):
             time.sleep(API_CALL_DELAY)
 
-    # ── Step 3: Assemble and print the report ─────────────
-    full_report = report_header + "".join(report_blocks)
+    # ── Step 3: Write to BigQuery ─────────────────────────
+    # Hand the complete results list to bq_writer in one shot.
+    # One batch write is more efficient than writing row by row.
+    run_id = write_to_bigquery(results)
+
+    # ── Step 4: Assemble and save text report ─────────────
+    full_report = build_report_header(len(anomalies)) + "".join(report_blocks)
+    full_report += f"\n{'=' * 65}\n"
+    full_report += f"  BigQuery Run ID: {run_id}\n"
+    full_report += f"  Table: intricate-ward-459513-e1.ecommerce_quality_monitor.anomaly_reports\n"
+    full_report += f"{'=' * 65}\n"
 
     print("\n" + full_report)
 
-    # ── Step 4: Save report to file ───────────────────────
     os.makedirs("data", exist_ok=True)
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write(full_report)
 
-    print(f"\n{'=' * 65}")
-    print(f"✅ Pipeline complete. Report saved to: {REPORT_PATH}")
-    print(f"{'=' * 65}\n")
+    print(f"✅ Pipeline complete.")
+    print(f"   Report saved to : {REPORT_PATH}")
+    print(f"   BigQuery run ID : {run_id}\n")
 
 
 # ── Entry point ───────────────────────────────────────────
