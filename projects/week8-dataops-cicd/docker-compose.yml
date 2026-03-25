@@ -1,0 +1,30 @@
+# docker-compose is for LOCAL DEVELOPMENT only
+# It lets you run the container with one command and configure env vars easily
+
+version: "3.9"
+
+services:
+  etl-pipeline:
+    # Build from our Dockerfile in the current directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Build the 'runtime' stage specifically
+      target: runtime
+
+    # Name the container
+    container_name: week8-etl
+
+    # Environment variables — override these without touching the Dockerfile
+    environment:
+      - ENVIRONMENT=local
+      - HIGH_VALUE_THRESHOLD=500.0
+
+    # Mount your local etl/ folder into the container
+    # This means code changes reflect immediately without rebuilding
+    # ONLY use this in development — never in production
+    volumes:
+      - ./etl:/app
+
+    # Restart policy for long-running services (not needed for a one-shot ETL)
+    restart: "no"

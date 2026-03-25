@@ -1,0 +1,11 @@
+# Google Cloud
+google-cloud-bigquery==3.11.4
+google-cloud-storage==2.10.0
+
+# Data processing
+pandas==2.1.4
+
+# Code quality — also used in CI/CD (Day 2)
+pytest==7.4.4
+pytest-cov==4.1.0
+ruff==0.1.9
