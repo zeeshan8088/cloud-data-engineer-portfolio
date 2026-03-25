@@ -11,3 +11,8 @@ __pycache__/
 
 # airflow logs
 logs/
+
+.env
+venv/
+__pycache__/
+*.pyc
