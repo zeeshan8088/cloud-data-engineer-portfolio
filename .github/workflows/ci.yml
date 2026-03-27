@@ -73,9 +73,11 @@ jobs:
       - name: Run tests with coverage
         run: |
           python -m pytest etl/tests/ -v \
-            --cov=etl/etl_pipeline \
+            --cov=etl_pipeline \
             --cov-report=term-missing \
             --cov-fail-under=80
+        env:
+          PYTHONPATH: projects/week8-dataops-cicd/etl
 
       # Step 6: Upload coverage report as a workflow artifact
       # This lets you download the HTML coverage report from the GitHub Actions UI
