@@ -3,14 +3,16 @@ Unit tests for etl_pipeline.py
 Run with: pytest tests/ -v --cov=etl_pipeline --cov-report=term-missing
 """
 
-import pytest
-import sys
 import os
+import sys
 
-# Make sure Python can find etl_pipeline.py when running from the etl/ directory
+import pytest
+
+# noqa: E402 is not needed here because we restructure the path setup
+# to use a conftest.py instead — cleaner and ruff-compliant
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from etl_pipeline import transform_order, run_pipeline
+from etl_pipeline import transform_order, run_pipeline  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
