@@ -113,11 +113,8 @@ jobs:
           cache-to: type=gha,mode=max
 
       # Smoke test — pull the image we just pushed and run it
-      # This confirms the pushed image actually works, not just that it built
       - name: Smoke test pushed image
         run: |
-          docker pull asia-south1-docker.pkg.dev/intricate-ward-459513-e1/week8-repo/week8-etl:${{ github.sha }}
-          docker run --rm \
-            -e ENVIRONMENT=ci \
-            -e HIGH_VALUE_THRESHOLD=1000.0 \
-            asia-south1-docker.pkg.dev/intri
+          IMAGE="asia-south1-docker.pkg.dev/intricate-ward-459513-e1/week8-repo/week8-etl:${{ github.sha }}"
+          docker pull "$IMAGE"
+          docker run --rm -e ENVIRONMENT=ci -e HIGH_VALUE_THRESHOLD=1000.0 "$IMAGE"
