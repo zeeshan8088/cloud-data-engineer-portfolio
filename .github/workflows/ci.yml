@@ -118,3 +118,54 @@ jobs:
           IMAGE="asia-south1-docker.pkg.dev/intricate-ward-459513-e1/week8-repo/week8-etl:${{ github.sha }}"
           docker pull "$IMAGE"
           docker run --rm -e ENVIRONMENT=ci -e HIGH_VALUE_THRESHOLD=1000.0 "$IMAGE"
+
+          # ---------------------------------------------------------------------------
+  # Job 3: Terraform Plan
+  # Shows infrastructure changes on every push
+  # Only runs plan (never apply) in CI — apply is always manual
+  # ---------------------------------------------------------------------------
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: test
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.0"
+
+      - name: Terraform Init
+        working-directory: projects/week8-dataops-cicd/infrastructure
+        run: terraform init
+
+      - name: Terraform Format Check
+        working-directory: projects/week8-dataops-cicd/infrastructure
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+
+      - name: Terraform Validate
+        working-directory: projects/week8-dataops-cicd/infrastructure
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: projects/week8-dataops-cicd/infrastructure
+        run: |
+          terraform plan -no-color 2>&1 | tee terraform-plan.txt
+          echo "### Terraform Plan Output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat terraform-plan.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
