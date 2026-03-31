@@ -46,3 +46,8 @@ variable "enable_delete_protection" {
   type        = bool
   default     = false
 }
+
+variable "alert_email" {
+  description = "Email address to receive pipeline alert notifications"
+  type        = string
+}
