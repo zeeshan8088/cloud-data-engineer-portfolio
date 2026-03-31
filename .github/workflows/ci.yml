@@ -120,9 +120,10 @@ jobs:
           docker run --rm -e ENVIRONMENT=ci -e HIGH_VALUE_THRESHOLD=1000.0 "$IMAGE"
 
           # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
   # Job 3: Terraform Plan
-  # Shows infrastructure changes on every push
-  # Only runs plan (never apply) in CI — apply is always manual
+  # Runs against the dev environment module
+  # Shows infrastructure changes on every push — never applies automatically
   # ---------------------------------------------------------------------------
   terraform-plan:
     name: Terraform Plan
@@ -149,7 +150,7 @@ jobs:
           terraform_version: "1.5.0"
 
       - name: Terraform Init
-        working-directory: projects/week8-dataops-cicd/infrastructure
+        working-directory: projects/week8-dataops-cicd/infrastructure/environments/dev
         run: terraform init
 
       - name: Terraform Format Check
@@ -158,11 +159,11 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Validate
-        working-directory: projects/week8-dataops-cicd/infrastructure
+        working-directory: projects/week8-dataops-cicd/infrastructure/environments/dev
         run: terraform validate
 
       - name: Terraform Plan
-        working-directory: projects/week8-dataops-cicd/infrastructure
+        working-directory: projects/week8-dataops-cicd/infrastructure/environments/dev
         run: |
           terraform plan -no-color 2>&1 | tee terraform-plan.txt
           echo "### Terraform Plan Output" >> $GITHUB_STEP_SUMMARY
