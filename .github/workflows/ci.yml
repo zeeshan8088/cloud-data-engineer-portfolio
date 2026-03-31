@@ -68,8 +68,6 @@ jobs:
     needs: test
 
     # These permissions are REQUIRED for Workload Identity Federation
-    # id-token: allows GitHub to generate an OIDC token to prove its identity to GCP
-    # contents: allows reading the repo code
     permissions:
       contents: read
       id-token: write
@@ -83,7 +81,6 @@ jobs:
         uses: actions/checkout@v4
 
       # Authenticate to GCP using Workload Identity Federation
-      # No JSON key, no password — just a short-lived token
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
@@ -99,7 +96,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       # Build AND push the image to Artifact Registry
-      # Tag with both the commit SHA (permanent, traceable) and 'latest' (convenient)
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -119,11 +115,8 @@ jobs:
           docker pull "$IMAGE"
           docker run --rm -e ENVIRONMENT=ci -e HIGH_VALUE_THRESHOLD=1000.0 "$IMAGE"
 
-          # ---------------------------------------------------------------------------
   # ---------------------------------------------------------------------------
   # Job 3: Terraform Plan
-  # Runs against the dev environment module
-  # Shows infrastructure changes on every push — never applies automatically
   # ---------------------------------------------------------------------------
   terraform-plan:
     name: Terraform Plan
