@@ -1,0 +1,16 @@
+order_id,customer_id,city,product_category,quantity,unit_price,order_date,status
+1001,C001,Bengaluru,Electronics,2,15000.00,2024-01-15,completed
+1002,C002,Mumbai,Clothing,5,1200.00,2024-01-15,completed
+1003,C003,Delhi,Electronics,1,45000.00,2024-01-16,completed
+1004,C001,Bengaluru,Food,10,500.00,2024-01-16,cancelled
+1005,C004,Chennai,Electronics,3,8000.00,2024-01-17,completed
+1006,C005,Mumbai,Clothing,2,2500.00,2024-01-17,completed
+1007,C002,Mumbai,Food,8,300.00,2024-01-18,completed
+1008,C006,Bengaluru,Electronics,1,55000.00,2024-01-18,cancelled
+1009,C007,Delhi,Clothing,4,1800.00,2024-01-19,completed
+1010,C003,Chennai,Food,15,200.00,2024-01-19,completed
+1011,C008,Hyderabad,Electronics,2,12000.00,2024-01-20,completed
+1012,C009,Hyderabad,Clothing,3,950.00,2024-01-20,completed
+1013,C001,Bengaluru,Electronics,1,32000.00,2024-01-21,completed
+1014,C010,Mumbai,Food,20,150.00,2024-01-21,cancelled
+1015,C004,Chennai,Clothing,6,1100.00,2024-01-22,completed
