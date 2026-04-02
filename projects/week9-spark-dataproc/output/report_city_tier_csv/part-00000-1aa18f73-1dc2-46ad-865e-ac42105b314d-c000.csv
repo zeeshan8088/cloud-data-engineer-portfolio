@@ -1,0 +1,9 @@
+city,membership_tier,total_revenue,order_count,avg_order_value,max_order_value
+BENGALURU,Premium,62000.0,2,31000.0,32000.0
+DELHI,Premium,52200.0,2,26100.0,45000.0
+CHENNAI,Standard,30600.0,2,15300.0,24000.0
+HYDERABAD,Standard,24000.0,1,24000.0,24000.0
+MUMBAI,Standard,8400.0,2,4200.0,6000.0
+MUMBAI,Premium,5000.0,1,5000.0,5000.0
+CHENNAI,Premium,3000.0,1,3000.0,3000.0
+HYDERABAD,Premium,2850.0,1,2850.0,2850.0

@@ -1,0 +1,9 @@
+customer_id,customer_name,membership_tier,total_spent,total_orders
+C001,Aisha Khan,Premium,62000.0,2
+C003,Priya Nair,Premium,48000.0,2
+C004,Arjun Patel,Standard,30600.0,2
+C008,Karan Joshi,Standard,24000.0,1
+C002,Rohan Mehta,Standard,8400.0,2
+C007,Divya Sharma,Premium,7200.0,1
+C005,Sneha Reddy,Premium,5000.0,1
+C009,Meera Iyer,Premium,2850.0,1
