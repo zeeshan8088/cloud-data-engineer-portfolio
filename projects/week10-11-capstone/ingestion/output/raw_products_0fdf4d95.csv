@@ -1,0 +1,101 @@
+product_id,product_name,category,price,cost_price,stock_quantity,supplier,rating,review_count,is_available,_ingested_at,_source,_batch_id,_ingested_date
+1,Wireless Bluetooth Headphones,electronics,16661.76,7137.95,0,CloudNine Imports,4.0,493,False,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+2,Cotton Crew Neck T-Shirt,clothing,3344.64,2205.12,248,TechWorld Supplies,3.4,322,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+3,Non-Stick Cookware Set,home_kitchen,3580.23,1667.97,4,Eastern Commerce Ltd,2.6,2552,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+4,Data Engineering with Python,books,811.08,481.85,97,Mountain View Trading,4.1,808,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+5,Yoga Mat Premium 6mm,sports_fitness,639.24,267.01,47,Eastern Commerce Ltd,3.5,709,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+6,Face Wash Gel Cleanser,beauty_personal_care,3930.9,2255.16,66,Prime Wholesale Co,4.2,2446,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+7,Building Blocks 500pc,toys_games,3095.41,1425.8,263,Global Trade Hub,3.4,3423,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+8,USB-C Fast Charger,electronics,61526.97,33654.81,178,Horizon Retail Partners,2.7,1803,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+9,Slim Fit Jeans,clothing,2430.78,1242.34,77,Mountain View Trading,4.4,1130,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+10,Electric Kettle 1.5L,home_kitchen,6889.83,3029.11,53,Eastern Commerce Ltd,4.2,2472,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+11,Designing Data-Intensive Apps,books,1889.78,867.23,5,Prime Wholesale Co,3.4,1177,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+12,Resistance Bands Set,sports_fitness,5735.8,3394.08,138,Global Trade Hub,2.6,3013,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+13,Sunscreen SPF 50+,beauty_personal_care,1196.86,762.71,71,CloudNine Imports,3.9,2506,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+14,Remote Control Car,toys_games,1561.73,1165.15,171,TechWorld Supplies,3.8,1240,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+15,Portable Power Bank 20000mAh,electronics,38399.89,16263.37,25,Eastern Commerce Ltd,4.2,2059,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+16,Hooded Sweatshirt,clothing,3810.89,2811.82,168,Pacific Goods Inc,2.5,43,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+17,Air Fryer 4L,home_kitchen,2853.45,1375.78,469,Global Trade Hub,5.0,3164,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+18,The Pragmatic Programmer,books,1952.46,1297.24,10,Eastern Commerce Ltd,3.3,553,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+19,Adjustable Dumbbells,sports_fitness,4409.73,3260.55,9,Pacific Goods Inc,4.1,305,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+20,Hair Oil Argan,beauty_personal_care,2421.07,1110.89,967,TechWorld Supplies,2.8,4904,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+21,Board Game Strategy,toys_games,1152.13,491.48,28,CloudNine Imports,4.2,4016,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+22,Smart Watch Fitness Tracker,electronics,77474.96,53200.07,57,Prime Wholesale Co,3.9,3378,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+23,Formal Dress Shirt,clothing,4824.6,2496.35,92,Stellar Distributors,3.7,2514,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+24,Stainless Steel Water Bottle,home_kitchen,9718.68,6841.16,17,Mountain View Trading,4.8,496,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+25,Clean Code,books,1370.16,818.51,6,Prime Wholesale Co,3.2,3209,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+26,Jump Rope Speed,sports_fitness,11045.88,6594.06,672,TechWorld Supplies,2.7,3186,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+27,Body Lotion Moisturizing,beauty_personal_care,1867.97,903.12,78,Horizon Retail Partners,3.8,1719,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+28,Puzzle 1000 Pieces,toys_games,3635.34,2353.73,161,Delta Supplies Corp,4.5,2209,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+29,Noise Cancelling Earbuds,electronics,43514.49,18802.0,18,Prime Wholesale Co,4.3,1710,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+30,Running Shorts,clothing,1718.44,880.58,178,Global Trade Hub,4.7,4176,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+31,Silicone Baking Mat,home_kitchen,12241.6,5563.36,187,Global Trade Hub,4.5,422,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+32,System Design Interview,books,364.78,161.3,150,Delta Supplies Corp,3.2,1814,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+33,Foam Roller Muscle,sports_fitness,8941.06,4668.27,67,Delta Supplies Corp,4.1,2132,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+34,Beard Trimmer Cordless,beauty_personal_care,2235.02,1160.68,9,Delta Supplies Corp,4.4,2448,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+35,Action Figure Collectible,toys_games,2573.72,1338.67,365,Global Trade Hub,4.2,1538,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+36,Laptop Stand Adjustable,electronics,55455.06,22184.01,186,Pacific Goods Inc,4.8,1154,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+37,Winter Jacket Waterproof,clothing,3567.4,2650.42,104,CloudNine Imports,2.6,1425,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+38,Cast Iron Skillet,home_kitchen,1116.77,756.77,19,Mountain View Trading,3.0,2355,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+39,Atomic Habits,books,902.58,470.21,22,Stellar Distributors,3.3,2759,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+40,Pull Up Bar Doorway,sports_fitness,5272.43,2815.5,19,Horizon Retail Partners,3.6,4255,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+41,Lip Balm SPF,beauty_personal_care,3001.43,1307.56,77,Mountain View Trading,4.7,172,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+42,Card Game Deck,toys_games,1173.33,649.4,38,Delta Supplies Corp,4.0,2596,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+43,Mechanical Keyboard RGB,electronics,80830.27,59058.71,473,CloudNine Imports,4.2,3206,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+44,Polo Shirt Classic,clothing,3766.47,1851.77,60,Stellar Distributors,3.1,1179,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+45,Bamboo Cutting Board Set,home_kitchen,1569.14,1049.46,129,Stellar Distributors,4.7,1693,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+46,Sapiens: A Brief History,books,1446.04,885.13,123,Global Trade Hub,3.6,4151,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+47,Ab Roller Wheel,sports_fitness,6427.18,4505.57,8,CloudNine Imports,3.1,676,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+48,Face Serum Vitamin C,beauty_personal_care,3228.12,1443.91,24,CloudNine Imports,2.7,3454,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+49,Drone Mini Quadcopter,toys_games,4473.03,1982.01,97,Stellar Distributors,3.8,291,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+50,Wireless Mouse Ergonomic,electronics,53414.27,34919.08,174,Prime Wholesale Co,3.0,2763,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+51,Linen Trousers,clothing,2043.88,997.11,19,Global Trade Hub,4.9,664,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+52,French Press Coffee Maker,home_kitchen,5293.37,2879.48,16,Prime Wholesale Co,2.8,359,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+53,The Psychology of Money,books,1914.74,884.98,6,Stellar Distributors,4.3,4965,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+54,Kettlebell 16kg,sports_fitness,13392.37,8277.99,41,Delta Supplies Corp,3.2,1098,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+55,Shampoo Anti-Dandruff,beauty_personal_care,3327.04,2427.01,80,Horizon Retail Partners,2.9,3956,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+56,Rubiks Cube Speed,toys_games,2353.35,1142.7,188,TechWorld Supplies,2.8,712,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+57,Webcam HD 1080p,electronics,87277.82,58961.89,52,Global Trade Hub,3.5,214,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+58,Athletic Track Pants,clothing,2427.18,1130.84,0,Stellar Distributors,3.9,664,False,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+59,Kitchen Scale Digital,home_kitchen,9610.85,4853.63,793,Global Trade Hub,2.7,3623,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+60,Deep Work,books,243.77,119.15,137,Delta Supplies Corp,4.4,1769,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+61,Gym Gloves Leather,sports_fitness,14850.19,7956.41,104,TechWorld Supplies,5.0,2322,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+62,Deodorant Roll-On,beauty_personal_care,1571.49,908.76,15,Pacific Goods Inc,3.0,823,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+63,Nerf Blaster Elite,toys_games,2117.41,1270.79,158,Pacific Goods Inc,3.9,1386,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+64,Portable SSD 1TB,electronics,70834.16,29352.12,107,Eastern Commerce Ltd,3.5,2829,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+65,Denim Jacket,clothing,2417.52,1485.48,887,Horizon Retail Partners,3.9,3718,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+66,Spice Rack Organizer,home_kitchen,841.86,600.25,75,Global Trade Hub,4.9,1277,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+67,Thinking Fast and Slow,books,1524.82,861.44,106,TechWorld Supplies,2.8,4033,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+68,Sports Armband Phone,sports_fitness,9477.15,4494.61,172,Delta Supplies Corp,4.4,840,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+69,Hand Cream Shea Butter,beauty_personal_care,383.01,194.63,391,Prime Wholesale Co,4.4,246,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+70,LEGO Architecture Set,toys_games,1317.01,981.08,107,Eastern Commerce Ltd,3.6,646,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+71,HDMI Cable 4K,electronics,61700.23,38402.39,86,Global Trade Hub,3.9,1928,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+72,Flannel Shirt Checkered,clothing,4187.38,2164.67,57,Global Trade Hub,5.0,3699,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+73,Glass Food Containers Set,home_kitchen,2745.39,1707.58,27,Global Trade Hub,2.8,548,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+74,The Lean Startup,books,347.11,242.05,0,Eastern Commerce Ltd,4.5,4076,False,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+75,Running Belt Waist Pack,sports_fitness,6033.86,2508.49,12,Prime Wholesale Co,4.0,2616,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+76,Hair Dryer Ionic,beauty_personal_care,2330.84,1132.98,120,Global Trade Hub,4.5,3573,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+77,Chess Set Wooden,toys_games,1021.41,629.54,149,Global Trade Hub,2.5,495,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+78,USB Hub 7-Port,electronics,52220.46,37949.11,69,CloudNine Imports,3.8,2487,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+79,V-Neck Sweater Wool,clothing,4576.96,2936.7,881,Global Trade Hub,3.2,4474,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+80,Hand Blender 800W,home_kitchen,4150.83,2388.76,565,Horizon Retail Partners,3.4,4810,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+81,Zero to One,books,931.85,488.56,74,Mountain View Trading,3.8,128,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+82,Compression Socks,sports_fitness,4989.53,3676.19,125,Eastern Commerce Ltd,2.8,4755,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+83,Face Mask Sheet Pack,beauty_personal_care,273.24,133.22,10,Stellar Distributors,2.9,1227,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+84,Telescope Kids,toys_games,1440.78,727.98,35,Stellar Distributors,3.7,249,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+85,Phone Gimbal Stabilizer,electronics,81680.21,59955.34,146,CloudNine Imports,4.3,2382,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+86,Cargo Shorts,clothing,3827.53,2839.3,0,TechWorld Supplies,3.0,4971,False,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+87,Pressure Cooker 5L,home_kitchen,10652.83,4465.79,644,Delta Supplies Corp,4.2,2854,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+88,Ikigai,books,1755.2,1078.53,150,Pacific Goods Inc,3.7,1654,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+89,Boxing Hand Wraps,sports_fitness,4251.27,1838.39,14,Global Trade Hub,4.9,2495,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+90,Perfume Eau de Toilette,beauty_personal_care,2446.03,1074.84,36,Global Trade Hub,3.3,4131,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+91,Science Kit Chemistry,toys_games,2572.29,1124.38,116,Stellar Distributors,3.7,2656,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+92,Ring Light 10 inch,electronics,28140.59,16335.55,497,Stellar Distributors,3.7,808,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+93,Blazer Slim Fit,clothing,3660.87,2515.7,153,Mountain View Trading,3.8,4387,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+94,Toaster 2-Slice,home_kitchen,1023.52,745.45,972,Eastern Commerce Ltd,4.8,52,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+95,Rich Dad Poor Dad,books,821.72,381.27,5,TechWorld Supplies,4.7,3742,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+96,Badminton Racket Pro,sports_fitness,9141.2,5454.45,138,Prime Wholesale Co,4.9,8,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+97,Nail Polish Set,beauty_personal_care,3279.9,2002.85,117,TechWorld Supplies,2.7,1842,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+98,Art Supplies Kit,toys_games,1469.75,870.72,130,Eastern Commerce Ltd,3.7,2845,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+99,Monitor Arm Mount,electronics,11196.61,7227.07,128,Stellar Distributors,3.8,2673,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07
+100,Kurta Set Cotton,clothing,4911.38,2160.97,161,CloudNine Imports,4.5,1775,True,2026-04-07T09:19:59,synthetic_faker,0fdf4d95-e4b8-43b5-be9d-6ffb702f8b89,2026-04-07

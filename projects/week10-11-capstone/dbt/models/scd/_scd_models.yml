@@ -1,0 +1,132 @@
+# ============================================================
+# RetailFlow — SCD Layer Model Documentation & Tests
+# ============================================================
+
+version: 2
+
+models:
+  - name: dim_customers_scd2
+    description: >
+      SCD Type 2 customer dimension table. Each row represents one
+      historical version of a customer's profile. When any tracked
+      column (email, phone, city, state, is_active) changes, a new
+      version row is inserted with _is_current = true, and the
+      previous version gets _valid_to set to the change timestamp.
+
+      Use this table (filtered to _is_current = true) for current
+      customer lookups. Use the full table for historical accuracy
+      in time-series joins (e.g., "what city was the customer in
+      when they placed this order 6 months ago?").
+
+      Built from: customers_snapshot → dim_customers_scd2
+      Materialization: incremental (only new/changed versions processed)
+
+    columns:
+      - name: customer_version_sk
+        description: >
+          Surrogate key — unique per version of each customer record.
+          Generated as MD5(customer_id || dbt_scd_id).
+          Use this as the FK target from fact tables.
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: Natural key from Bronze layer. Not unique in this table — each customer can have many versions.
+        tests:
+          - not_null
+
+      - name: full_name
+        description: Concatenated first + last name (initcap cleaned).
+        tests:
+          - not_null
+
+      - name: email
+        description: >
+          Customer email address (lowercase, trimmed). This is a
+          tracked column — changes trigger a new SCD2 version row.
+        tests:
+          - not_null
+
+      - name: phone
+        description: >
+          Phone number. Tracked column — changes trigger new version.
+
+      - name: city
+        description: >
+          Customer city (initcap cleaned). Tracked column.
+        tests:
+          - not_null
+
+      - name: state
+        description: >
+          Customer state (initcap cleaned). Tracked column.
+
+      - name: country
+        description: Customer country.
+
+      - name: age
+        description: Customer age as integer.
+
+      - name: age_bucket
+        description: Age group label for cohort analysis.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['18-25', '26-35', '36-45', '46-55', '56+', 'unknown']
+
+      - name: gender
+        description: "Male / Female / Non-Binary"
+
+      - name: registration_date
+        description: Date customer originally registered.
+
+      - name: is_active
+        description: >
+          Boolean active flag. Tracked column — deactivating an
+          account creates a new SCD2 version with is_active = false.
+        tests:
+          - not_null
+
+      - name: _valid_from
+        description: >
+          Timestamp when this version became the active record.
+          For V1 rows, this equals the first ingestion timestamp.
+        tests:
+          - not_null
+
+      - name: _valid_to
+        description: >
+          Timestamp when this version was superseded by a newer
+          version. NULL for the current active version of each customer.
+          Analysts: use WHERE _valid_to IS NULL or WHERE _is_current = true.
+
+      - name: _is_current
+        description: >
+          Convenience boolean flag. True if this is the most recent
+          version of this customer record. Equivalent to _valid_to IS NULL.
+        tests:
+          - not_null
+
+      - name: _version_num
+        description: >
+          Sequential version number per customer_id.
+          1 = original record, 2 = first change, 3 = second change, etc.
+        tests:
+          - not_null
+
+      - name: _scd_id
+        description: dbt's internal SCD row identifier (dbt_scd_id). Kept for debugging.
+        tests:
+          - not_null
+
+      - name: _dbt_updated_at
+        description: Timestamp when dbt last updated this row (used for incremental logic).
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: Original Bronze ingestion timestamp.
+
+      - name: batch_id
+        description: Bronze batch UUID for lineage tracing.

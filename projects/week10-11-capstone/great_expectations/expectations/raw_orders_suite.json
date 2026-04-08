@@ -1,0 +1,78 @@
+{
+  "expectation_suite_name": "raw_orders_suite",
+  "expectations": [
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "order_id" },
+      "meta": { "notes": "Every order must have an ID" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "user_id" },
+      "meta": { "notes": "Every order must be linked to a user" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "product_id" },
+      "meta": { "notes": "Every order must reference a product" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "total_amount",
+        "min_value": 0.01,
+        "max_value": 500000.0
+      },
+      "meta": { "notes": "Total amount must be positive and within a reasonable upper bound" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "quantity",
+        "min_value": 1,
+        "max_value": 100
+      },
+      "meta": { "notes": "Quantity must be at least 1 and capped at 100" }
+    },
+    {
+      "type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "status",
+        "value_set": ["pending", "shipped", "delivered", "cancelled"]
+      },
+      "meta": { "notes": "Status must be one of the four valid order states" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "product_category" },
+      "meta": { "notes": "Every order must have a product category" }
+    },
+    {
+      "type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "payment_method",
+        "value_set": ["credit_card", "debit_card", "upi", "net_banking", "cod", "wallet"]
+      },
+      "meta": { "notes": "Payment method must be one of the supported types" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "_ingested_at" },
+      "meta": { "notes": "Audit column must always be populated" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "_ingested_date" },
+      "meta": { "notes": "Partition column must always be populated" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "_batch_id" },
+      "meta": { "notes": "Batch ID must always be present for traceability" }
+    }
+  ],
+  "meta": {
+    "great_expectations_version": "1.15.2",
+    "description": "Data quality suite for retailflow_bronze.raw_orders — validates order integrity, pricing bounds, and audit columns. Note: uniqueness is NOT enforced at Bronze (append-only); deduplication happens in Silver."
+  }
+}

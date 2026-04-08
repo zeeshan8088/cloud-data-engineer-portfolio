@@ -1,0 +1,48 @@
+# ============================================================
+# RetailFlow — dbt Project Configuration
+# ============================================================
+# Bronze → Silver → Gold warehouse architecture
+# Silver  = staging views  (clean, typed, deduplicated)
+# Gold    = mart tables    (business-ready aggregations)
+# SCD     = incremental    (slowly changing dimensions)
+# ============================================================
+
+name: 'retailflow'
+version: '1.0.0'
+config-version: 2
+
+profile: 'retailflow'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# ── Materialisation defaults per folder ──────────────────────
+models:
+  retailflow:
+    staging:
+      +materialized: view
+      +schema: silver
+      +tags: ['silver', 'staging']
+    marts:
+      +materialized: table
+      +schema: gold
+      +tags: ['gold', 'mart']
+    scd:
+      +materialized: incremental
+      +schema: silver
+      +tags: ['silver', 'scd']
+
+# ── Project-level variables ──────────────────────────────────
+vars:
+  gcp_project: 'intricate-ward-459513-e1'
+  bronze_dataset: 'retailflow_bronze'
+  silver_dataset: 'retailflow_silver'
+  gold_dataset: 'retailflow_gold'

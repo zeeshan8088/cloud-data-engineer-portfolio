@@ -1,0 +1,133 @@
+# ============================================================
+# RetailFlow — Staging Model Tests & Documentation
+# ============================================================
+# Column-level tests on the OUTPUT staging models (not sources).
+# These verify that our transformations produce clean data.
+# ============================================================
+
+version: 2
+
+models:
+  # ── stg_orders ─────────────────────────────────────────────
+  - name: stg_orders
+    description: >
+      Cleaned and deduplicated orders. One row per unique order_id.
+      Enriched with surrogate key and proper DATE casting.
+    columns:
+      - name: order_sk
+        description: Surrogate key (MD5 hash of order_id)
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Natural key from source system
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null
+      - name: order_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['pending', 'shipped', 'delivered', 'cancelled']
+      - name: payment_method
+        tests:
+          - not_null
+
+  # ── stg_customers ──────────────────────────────────────────
+  - name: stg_customers
+    description: >
+      Cleaned and deduplicated customers. One row per customer_id.
+      Enriched with full_name, email_domain, and age_bucket.
+    columns:
+      - name: customer_sk
+        description: Surrogate key (MD5 hash of customer_id)
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - not_null
+      - name: full_name
+        tests:
+          - not_null
+      - name: age_bucket
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['18-25', '26-35', '36-45', '46-55', '56+', 'unknown']
+
+  # ── stg_products ───────────────────────────────────────────
+  - name: stg_products
+    description: >
+      Cleaned and deduplicated product catalog. One row per product_id.
+      Enriched with margin, margin_pct, stock_status.
+    columns:
+      - name: product_sk
+        description: Surrogate key (MD5 hash of product_id)
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: category
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - electronics
+                - clothing
+                - home_kitchen
+                - books
+                - sports_fitness
+                - beauty_personal_care
+                - toys_games
+      - name: price
+        tests:
+          - not_null
+      - name: stock_status
+        tests:
+          - accepted_values:
+              values: ['out_of_stock', 'low_stock', 'in_stock', 'overstocked']
+
+  # ── stg_clickstream ────────────────────────────────────────
+  - name: stg_clickstream
+    description: >
+      Cleaned and deduplicated clickstream events. One row per event_id.
+      Enriched with funnel_step_number and is_conversion flag.
+    columns:
+      - name: event_sk
+        description: Surrogate key (MD5 hash of event_id)
+        tests:
+          - unique
+          - not_null
+      - name: event_id
+        tests:
+          - unique
+          - not_null
+      - name: event_type
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - page_view
+                - product_view
+                - add_to_cart
+                - checkout_started
+                - purchase
+      - name: funnel_step_number
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false

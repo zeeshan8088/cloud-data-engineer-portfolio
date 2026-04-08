@@ -1,0 +1,31 @@
+# ============================================================
+# RetailFlow — dbt Profiles (BigQuery Connection)
+# ============================================================
+# Local dev  → oauth (uses `gcloud auth application-default login`)
+# CI target  → service account JSON key via env var
+# ============================================================
+
+retailflow:
+  target: dev
+
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: intricate-ward-459513-e1
+      dataset: retailflow
+      location: asia-south1
+      threads: 4
+      timeout_seconds: 300
+      priority: interactive
+      retries: 1
+
+    ci:
+      type: bigquery
+      method: service-account
+      project: intricate-ward-459513-e1
+      dataset: retailflow
+      location: asia-south1
+      threads: 4
+      timeout_seconds: 300
+      keyfile: "{{ env_var('DBT_GOOGLE_KEYFILE', '') }}"

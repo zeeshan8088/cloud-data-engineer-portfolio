@@ -1,0 +1,95 @@
+{
+  "expectation_suite_name": "raw_products_suite",
+  "expectations": [
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "product_id" },
+      "meta": { "notes": "Every product must have an ID" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "product_name" },
+      "meta": { "notes": "Product must have a name" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "category" },
+      "meta": { "notes": "Category is required for grouping and analytics" }
+    },
+    {
+      "type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "category",
+        "value_set": [
+          "electronics", "clothing", "home_kitchen", "books",
+          "sports_fitness", "beauty_personal_care", "toys_games"
+        ]
+      },
+      "meta": { "notes": "Category must be one of the 7 defined product categories" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "price",
+        "min_value": 0.01,
+        "max_value": 200000.0
+      },
+      "meta": { "notes": "Price must be positive and within a reasonable ceiling" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "cost_price",
+        "min_value": 0.01,
+        "max_value": 200000.0
+      },
+      "meta": { "notes": "Cost price must be positive" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "stock_quantity",
+        "min_value": 0,
+        "max_value": 100000
+      },
+      "meta": { "notes": "Stock cannot be negative" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "rating",
+        "min_value": 0.0,
+        "max_value": 5.0
+      },
+      "meta": { "notes": "Rating must be on a 0-5 scale" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "review_count",
+        "min_value": 0,
+        "max_value": 1000000
+      },
+      "meta": { "notes": "Review count cannot be negative" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "supplier" },
+      "meta": { "notes": "Every product must have a supplier" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "_ingested_at" },
+      "meta": { "notes": "Audit timestamp must always be populated" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "_ingested_date" },
+      "meta": { "notes": "Partition column must always be populated" }
+    }
+  ],
+  "meta": {
+    "great_expectations_version": "1.15.2",
+    "description": "Data quality suite for retailflow_bronze.raw_products — validates catalog integrity, pricing/stock bounds, category enum, and audit columns. Note: uniqueness NOT enforced at Bronze (append-only); deduplication in Silver."
+  }
+}

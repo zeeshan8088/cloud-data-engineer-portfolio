@@ -1,0 +1,151 @@
+# ============================================================
+# RetailFlow — Bronze Source Definitions
+# ============================================================
+# Defines all 4 raw tables ingested on Day 1.
+# Schema tests run on source columns to catch upstream issues.
+# ============================================================
+
+version: 2
+
+sources:
+  - name: bronze
+    description: >
+      Raw, append-only data ingested from external sources.
+      Never transformed — serves as the immutable audit trail.
+    database: intricate-ward-459513-e1
+    schema: retailflow_bronze
+
+    tables:
+      # ── Orders ───────────────────────────────────────────────
+      - name: raw_orders
+        description: >
+          Purchase transactions fetched from FakeStore API +
+          synthetic enrichment. ~220 rows per daily batch.
+        columns:
+          - name: order_id
+            description: Unique order identifier
+            tests:
+              - not_null
+          - name: user_id
+            description: FK to customer who placed the order
+            tests:
+              - not_null
+          - name: product_id
+            description: FK to purchased product
+            tests:
+              - not_null
+          - name: total_amount
+            description: "quantity × product_price"
+            tests:
+              - not_null
+          - name: status
+            description: Current order status
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['pending', 'shipped', 'delivered', 'cancelled']
+          - name: payment_method
+            description: Payment instrument used
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['credit_card', 'debit_card', 'upi', 'net_banking', 'cod', 'wallet']
+          - name: _batch_id
+            description: UUID identifying the ingestion batch
+            tests:
+              - not_null
+
+      # ── Customers ────────────────────────────────────────────
+      - name: raw_customers
+        description: >
+          Synthetic customer profiles generated via Faker.
+          70 % Indian, 30 % international. ~500 rows per batch.
+        columns:
+          - name: customer_id
+            description: Unique customer identifier
+            tests:
+              - not_null
+          - name: email
+            description: Customer email address
+            tests:
+              - not_null
+          - name: age
+            description: Customer age (18–65)
+            tests:
+              - not_null
+          - name: gender
+            description: "Male / Female / Non-Binary"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['Male', 'Female', 'Non-Binary']
+          - name: _batch_id
+            description: UUID identifying the ingestion batch
+            tests:
+              - not_null
+
+      # ── Products ─────────────────────────────────────────────
+      - name: raw_products
+        description: >
+          Synthetic product catalog across 7 categories.
+          100 products per batch.
+        columns:
+          - name: product_id
+            description: Unique product identifier
+            tests:
+              - not_null
+          - name: product_name
+            description: Human-readable product name
+            tests:
+              - not_null
+          - name: category
+            description: Product category
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - electronics
+                    - clothing
+                    - home_kitchen
+                    - books
+                    - sports_fitness
+                    - beauty_personal_care
+                    - toys_games
+          - name: price
+            description: Retail selling price (INR)
+            tests:
+              - not_null
+          - name: _batch_id
+            description: UUID identifying the ingestion batch
+            tests:
+              - not_null
+
+      # ── Clickstream ──────────────────────────────────────────
+      - name: raw_clickstream
+        description: >
+          Simulated user browsing events across the e-commerce funnel.
+          ~1000 events per batch via Pub/Sub.
+        columns:
+          - name: event_id
+            description: Unique event identifier (UUID)
+            tests:
+              - not_null
+          - name: session_id
+            description: Browser session identifier
+            tests:
+              - not_null
+          - name: event_type
+            description: Funnel event category
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - page_view
+                    - product_view
+                    - add_to_cart
+                    - checkout_started
+                    - purchase
+          - name: _batch_id
+            description: UUID identifying the ingestion batch
+            tests:
+              - not_null

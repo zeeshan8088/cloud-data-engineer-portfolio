@@ -1,0 +1,74 @@
+{
+  "expectation_suite_name": "raw_customers_suite",
+  "expectations": [
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "customer_id" },
+      "meta": { "notes": "Every customer must have an ID" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "email" },
+      "meta": { "notes": "Email is required for every customer" }
+    },
+    {
+      "type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "email",
+        "regex": "^.+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+      },
+      "meta": { "notes": "Email must contain @ symbol with valid domain (RFC-permissive local part)" }
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "age",
+        "min_value": 18,
+        "max_value": 100
+      },
+      "meta": { "notes": "Customers must be between 18 and 100 years old" }
+    },
+    {
+      "type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "gender",
+        "value_set": ["Male", "Female", "Non-Binary"]
+      },
+      "meta": { "notes": "Gender must be one of the three allowed values" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "country" },
+      "meta": { "notes": "Country is required for geographic analysis" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "city" },
+      "meta": { "notes": "City is required for segmentation" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "first_name" },
+      "meta": { "notes": "First name must not be null" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "last_name" },
+      "meta": { "notes": "Last name must not be null" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "_ingested_at" },
+      "meta": { "notes": "Audit timestamp must always be populated" }
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "_ingested_date" },
+      "meta": { "notes": "Partition column must always be populated" }
+    }
+  ],
+  "meta": {
+    "great_expectations_version": "1.15.2",
+    "description": "Data quality suite for retailflow_bronze.raw_customers — validates identity, email format, demographic bounds, and audit columns. Note: uniqueness is NOT enforced at Bronze layer (append-only); deduplication happens in Silver."
+  }
+}

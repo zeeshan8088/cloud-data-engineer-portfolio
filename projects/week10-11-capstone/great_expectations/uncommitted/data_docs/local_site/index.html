@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <title>RetailFlow Data Quality Report</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 2rem; }
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header h1 { font-size: 2rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header p { color: #94a3b8; margin-top: 0.5rem; }
+    .overall { text-align: center; font-size: 1.5rem; padding: 1rem; margin: 1rem 0 2rem; border-radius: 12px; }
+    .overall.pass { background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #86efac; }
+    .overall.fail { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; }
+    .suite-card { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #334155; }
+    .suite-card h2 { color: #c4b5fd; font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .suite-card .meta { color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+    .stat-box { background: #0f172a; border-radius: 8px; padding: 1rem; text-align: center; }
+    .stat-box .number { font-size: 1.8rem; font-weight: bold; }
+    .stat-box .label { font-size: 0.8rem; color: #94a3b8; margin-top: 0.3rem; }
+    .pass-num { color: #22c55e; }
+    .fail-num { color: #ef4444; }
+    .neutral-num { color: #6366f1; }
+    .failures { margin-top: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 1rem; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .failures h3 { color: #fca5a5; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .failures pre { color: #fecaca; font-size: 0.8rem; white-space: pre-wrap; }
+    .footer { text-align: center; color: #475569; margin-top: 2rem; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class='header'>
+    <h1>📊 RetailFlow Data Quality Report</h1>
+    <p>Run ID: fe92532a-a74 | Generated: 2026-04-07 17:27 UTC</p>
+  </div>
+  <div class='overall fail'>
+    ❌ Overall Result: SOME SUITES FAILED
+  </div>
+  <div class='suite-card'>
+    <h2>❌ raw_orders_suite</h2>
+    <div class='meta'>Table: <code>intricate-ward-459513-e1.retailflow_bronze.raw_orders</code></div>
+    <div class='stats-grid'>
+      <div class='stat-box'><div class='number neutral-num'>11</div><div class='label'>Total Checks</div></div>
+      <div class='stat-box'><div class='number pass-num'>7</div><div class='label'>Passed</div></div>
+      <div class='stat-box'><div class='number fail-num'>4</div><div class='label'>Failed</div></div>
+      <div class='stat-box'><div class='number fail-num'>63.6%</div><div class='label'>Pass Rate</div></div>
+    </div>
+    <div class='failures'>
+      <h3>Failed Expectations:</h3>
+      <pre>[
+  {
+    "type": "expect_column_values_to_be_between",
+    "column": "total_amount",
+    "detail": "1 values in 'total_amount' outside [0.01, 500000.0]"
+  },
+  {
+    "type": "expect_column_values_to_be_in_set",
+    "column": "status",
+    "detail": "1 values in 'status' not in allowed set. Examples: ['INVALID_STATUS']"
+  },
+  {
+    "type": "expect_column_values_to_not_be_null",
+    "column": "product_category",
+    "detail": "1 null values found in 'product_category'"
+  },
+  {
+    "type": "expect_column_values_to_be_in_set",
+    "column": "payment_method",
+    "detail": "1 values in 'payment_method' not in allowed set. Examples: ['bitcoin']"
+  }
+]</pre>
+    </div>
+  </div>
+  <div class='footer'>
+    RetailFlow — Intelligent Retail Data Platform | Great Expectations Data Quality Layer
+  </div>
+</body>
+</html>
