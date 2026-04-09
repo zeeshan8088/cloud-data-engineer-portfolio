@@ -1,0 +1,326 @@
+# ============================================================
+# RetailFlow — Gold Layer Mart Model Definitions & Tests
+# ============================================================
+# Schema tests for all 4 mart models in the Gold layer.
+# These tests run via `dbt test --select marts` and are also
+# used in the Airflow DAG and CI/CD pipeline.
+# ============================================================
+
+version: 2
+
+models:
+
+  # ── mart_sales_daily ─────────────────────────────────────────
+  - name: mart_sales_daily
+    description: >
+      Daily revenue aggregation table for Looker Studio.
+      One row per calendar date with total revenue, order count,
+      average order value, unique customers, top category, and
+      cancellation tracking. Partitioned by order_date.
+    columns:
+      - name: order_date
+        description: Calendar date of the sales aggregation
+        tests:
+          - not_null
+          - unique
+
+      - name: total_revenue
+        description: Sum of total_amount for non-cancelled orders
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: order_count
+        description: Number of distinct orders on this date
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: avg_order_value
+        description: Average order value for non-cancelled orders
+        tests:
+          - not_null
+
+      - name: unique_customers
+        description: Count of distinct customers who ordered
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: units_sold
+        description: Total quantity of items sold (non-cancelled)
+        tests:
+          - not_null
+
+      - name: cancellation_rate
+        description: Percentage of orders cancelled (0-100)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true
+
+      - name: top_category
+        description: Category with the highest revenue on this date
+
+  # ── mart_customer_ltv ────────────────────────────────────────
+  - name: mart_customer_ltv
+    description: >
+      Customer Lifetime Value analysis table. One row per customer
+      (current SCD2 version). Includes total spend, frequency,
+      recency, LTV segment, churn risk, and RFM scores.
+    columns:
+      - name: customer_id
+        description: Unique customer identifier
+        tests:
+          - not_null
+          - unique
+
+      - name: full_name
+        description: Customer full name (FirstName LastName)
+        tests:
+          - not_null
+
+      - name: total_spend
+        description: Lifetime total spend in INR (0 if no orders)
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: order_count
+        description: Total number of non-cancelled orders
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: avg_order_value
+        description: Average order value across all orders
+        tests:
+          - not_null
+
+      - name: ltv_segment
+        description: >
+          LTV tier based on total spend.
+          High (≥50k), Medium (≥10k), Low (<10k), New (no orders)
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['High', 'Medium', 'Low', 'New']
+
+      - name: churn_risk
+        description: >
+          Churn risk level based on days since last order.
+          active (≤30d), at_risk (≤60d), slipping (≤90d),
+          churned (>90d), no_orders
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['active', 'at_risk', 'slipping', 'churned', 'no_orders']
+
+      - name: recency_score
+        description: RFM recency score (1–5, higher = more recent)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                max_value: 5
+                inclusive: true
+
+      - name: frequency_score
+        description: RFM frequency score (1–5, higher = more frequent)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                max_value: 5
+                inclusive: true
+
+      - name: monetary_score
+        description: RFM monetary score (1–5, higher = more spend)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                max_value: 5
+                inclusive: true
+
+      - name: rfm_total_score
+        description: Sum of R + F + M scores (3–15)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 3
+                max_value: 15
+                inclusive: true
+
+      - name: age_bucket
+        description: Customer age cohort
+        tests:
+          - accepted_values:
+              values: ['18-25', '26-35', '36-45', '46-55', '56+', 'unknown']
+
+  # ── mart_product_performance ─────────────────────────────────
+  - name: mart_product_performance
+    description: >
+      Product-level performance analytics. One row per product
+      with sales volumes, revenue, profitability, return rate, and
+      within-category ranking via RANK() window functions.
+      Also used as input for Vertex AI demand forecasting.
+    columns:
+      - name: product_id
+        description: Unique product identifier
+        tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        description: Human-readable product name
+        tests:
+          - not_null
+
+      - name: category
+        description: Product category (snake_case)
+        tests:
+          - not_null
+
+      - name: units_sold
+        description: Total units sold (non-cancelled orders)
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: revenue
+        description: Total revenue from this product
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+      - name: return_rate
+        description: Cancellation/return rate as percentage (0-100)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true
+
+      - name: rank_in_category
+        description: Revenue rank within the product's category (1 = top)
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+      - name: overall_revenue_rank
+        description: Revenue rank across all products (1 = top)
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+      - name: list_price
+        description: Catalog list price (INR)
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: false
+
+      - name: margin_pct
+        description: Profit margin percentage
+
+      - name: pct_of_category_revenue
+        description: This product's share of total category revenue (0–100)
+
+  # ── mart_funnel ──────────────────────────────────────────────
+  - name: mart_funnel
+    description: >
+      Daily conversion funnel analysis. One row per date.
+      Tracks the full e-commerce funnel: page_view → product_view
+      → add_to_cart → checkout_started → purchase.
+      Includes step-to-step conversion rates and session analytics.
+    columns:
+      - name: event_date
+        description: Calendar date
+        tests:
+          - not_null
+          - unique
+
+      - name: total_events
+        description: Total clickstream events on this date
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+      - name: total_sessions
+        description: Unique browsing sessions
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+
+      - name: page_views
+        description: Count of page_view events
+        tests:
+          - not_null
+
+      - name: product_views
+        description: Count of product_view events
+        tests:
+          - not_null
+
+      - name: add_to_cart
+        description: Count of add_to_cart events
+        tests:
+          - not_null
+
+      - name: checkout_started
+        description: Count of checkout_started events
+        tests:
+          - not_null
+
+      - name: purchases
+        description: Count of purchase events from clickstream
+        tests:
+          - not_null
+
+      - name: view_to_order_rate
+        description: Overall funnel conversion — page_views to purchases (%)
+
+      - name: session_conversion_rate
+        description: Percentage of sessions resulting in a purchase
+
+      - name: cart_abandonment_rate
+        description: Percentage of add_to_cart events that did not proceed to checkout
