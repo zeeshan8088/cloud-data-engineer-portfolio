@@ -20,13 +20,6 @@
 {{
     config(
         materialized='table',
-        -- TODO Day 11: re-enable partitioning for cost optimisation audit
-        -- partition_by={
-        --     'field': 'order_date',
-        --     'data_type': 'date',
-        --     'granularity': 'day'
-        -- },
-        -- cluster_by=['top_category'],
         tags=['gold', 'mart', 'sales']
     )
 }}

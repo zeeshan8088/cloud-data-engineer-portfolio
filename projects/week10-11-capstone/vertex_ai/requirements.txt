@@ -1,0 +1,11 @@
+# ============================================================
+# RetailFlow — Vertex AI Dependencies
+# ============================================================
+# Install: pip install -r requirements.txt
+# ============================================================
+
+google-cloud-aiplatform>=1.146.0
+google-cloud-bigquery>=3.14.0
+pandas>=2.1.0
+pyarrow>=14.0.0
+db-dtypes>=1.0.0
