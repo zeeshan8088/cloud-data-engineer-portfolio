@@ -330,27 +330,35 @@ def _log_pipeline_success(**context):
         logger.error("Could not log success to BQ (non-fatal): %s", exc)
 
 
-def _trigger_vertex_ai_placeholder(**context):
+def _trigger_vertex_batch_predict(**context):
     """
-    Day 9 placeholder for Vertex AI batch prediction trigger.
-    On Day 9 this is replaced with the real VertexAI API call.
+    Day 9: Triggers the Vertex AI batch prediction script.
+    Calls vertex_ai/batch_predict.py to forecast next_week_units_sold.
     """
-    logger.info(
-        "🤖 Vertex AI trigger placeholder — will be wired on Day 9.\n"
-        "   For now: verifying retailflow_gold mart tables are accessible..."
-    )
-    # Lightweight BQ check so the task does real work
-    from google.cloud import bigquery as bq_lib
-    client = bq_lib.Client(project=GCP_PROJECT)
-    for table in ["mart_sales_daily", "mart_customer_ltv",
-                  "mart_product_performance", "mart_funnel"]:
-        q = (f"SELECT COUNT(*) as cnt FROM "
-             f"`{GCP_PROJECT}.retailflow_gold.{table}` LIMIT 1")
-        rows = list(client.query(q).result())
-        cnt = rows[0]["cnt"]
-        logger.info("  ✅ %s — %d rows ready for AI features", table, cnt)
+    script_path = RETAILFLOW_HOME / "vertex_ai" / "batch_predict.py"
+    env = {**os.environ, "PYTHONPATH": str(RETAILFLOW_HOME / "vertex_ai")}
 
-    return {"status": "placeholder_ok", "day": 9}
+    logger.info("Running Vertex AI batch predict: %s", script_path)
+    result = subprocess.run(
+        [sys.executable, str(script_path)],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=1800,
+    )
+
+    if result.stdout:
+        logger.info("STDOUT:\n%s", result.stdout[-5000:])
+    if result.stderr:
+        logger.warning("STDERR:\n%s", result.stderr[-2000:])
+
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Vertex AI batch predict FAILED (exit {result.returncode})\n"
+            f"STDERR: {result.stderr[-1000:]}"
+        )
+
+    return {"status": "batch_predict_complete", "day": 9}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -607,11 +615,11 @@ with DAG(
     # ─────────────────────────────────────────────────────────────────────────
     trigger_vertex = PythonOperator(
         task_id="trigger_vertex_ai",
-        python_callable=_trigger_vertex_ai_placeholder,
+        python_callable=_trigger_vertex_batch_predict,
         doc_md=(
-            "Day 9 placeholder — currently validates Gold table row counts.\n"
-            "On Day 9: replaced with real Vertex AI AutoML batch prediction trigger.\n"
-            "Reads from mart_product_performance → predicts next_week_units_sold."
+            "Day 9: Runs Vertex AI AutoML batch prediction.\n"
+            "   Prepares input features, launches batch predict job,\n"
+            "   and outputs the forecast to retailflow_predictions.demand_forecast."
         ),
     )
 
