@@ -96,10 +96,10 @@ Most portfolio projects stop at "Airflow + BigQuery." RetailFlow goes further:
 └──────────────┬──────────────────────────────────┬───────────────────┘
                ▼                                  ▼
 ┌──────────────────────────┐      ┌──────────────────────────────────┐
-│  🤖 Vertex AI AutoML     │      │  📊 Looker Studio Dashboard      │
+│  🤖 Vertex AI AutoML     │      │  📊 Streamlit Dashboard          │
 │  Tabular regression      │      │  Revenue overview · Customer LTV │
-│  Demand forecasting      │      │  Funnel analysis · Forecast      │
-│  Batch predictions → BQ  │      │  Blended sources · Calculated    │
+│  Demand forecasting      │      │  Funnel analysis · ML Forecast   │
+│  Batch predictions → BQ  │      │  Live Pipeline Lineage (Sankey)  │
 └──────────────────────────┘      └──────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -123,10 +123,12 @@ Most portfolio projects stop at "Airflow + BigQuery." RetailFlow goes further:
 | **Warehouse** | BigQuery (Bronze/Silver/Gold) | Serverless, petabyte-scale, native partitioning/clustering |
 | **SCD Type 2** | dbt snapshots + MERGE | Historical accuracy for dimensional analysis |
 | **AI/ML** | Vertex AI Tabular AutoML | Managed ML — real trained model, not just an API call |
-| **Dashboard** | Looker Studio | Native BigQuery integration, calculated fields, scheduling |
+| **Dashboard** | Streamlit (Cloud Run) | Interactive Python web application with Plotly visuals |
 | **Orchestration** | Apache Airflow (Docker) | Full DAG with TaskGroups, XCom, SLA, failure callbacks |
 | **IaC** | Terraform (modular) | 4 modules: BigQuery, Storage, Scheduler, IAM |
 | **CI/CD** | GitHub Actions | dbt compile/test on PR + GE validation on merge |
+
+🔗 **Live Dashboard**: [https://retailflow-dashboard-987797188315.asia-south1.run.app](https://retailflow-dashboard-987797188315.asia-south1.run.app) — Streamlit app running on Google Cloud Run.
 
 ---
 
@@ -230,8 +232,10 @@ week10-11-capstone/
 │   ├── batch_predict.py
 │   └── evaluate_model.py
 │
-└── looker_studio/                         ← Day 10: Executive dashboard
-    └── dashboard_config.md
+├── streamlit_app/                         ← Day 10-12: Executive dashboard + Lineage
+│   ├── app.py                             ← Multi-page Streamlit application
+│   ├── Dockerfile
+│   └── requirements.txt
 ```
 
 ---
@@ -445,6 +449,14 @@ Terraform changes are validated via the existing `ci.yml` workflow which runs `t
 ### 8. "Walk me through the full pipeline end-to-end."
 
 > "At 2am UTC, the Airflow DAG kicks off. First, 4 Python ingestion tasks run in parallel — they pull data from the FakeStore API, generate synthetic customers and products, and simulate clickstream events. Everything lands in the Bronze layer. Next, Great Expectations validates all Bronze tables against 20+ rules. If any fail, the pipeline halts. If they pass, dbt runs the Silver staging models (cleaning, deduplication, enrichment), then the SCD Type 2 snapshot (customer history), then the 4 Gold marts. After all 130+ tests pass, the pipeline logs its metadata and triggers Vertex AI batch predictions. The entire run completes in under 15 minutes."
+
+---
+
+## 11. Known Limitations
+
+- **AutoML Quota Limitation**: Due to Google Cloud free-tier quota limits on Vertex AI model training hours, the pipeline uses a mock-prediction workaround (`generate_mock_predictions.py`) during regular CI/CD runs to populate the `demand_forecast` table. The full `train_automl.py` works but is selectively executed.
+- **Synthetic Data Size**: The platform is built on synthetic data generated via Faker and FakeStore API. After augmentation, the total dataset size is roughly 1,310 rows. While small, this ensures rapid integration testing and zero cloud storage costs, while fully demonstrating BigQuery partitioning/clustering logic that would apply at terabyte scale.
+- **Funnel Monotonicity Test**: The `assert_funnel_monotonic` data test has a "relaxed" partition_by logic to accommodate the completely randomized nature of the synthetic clickstream data. In a real-world scenario with deterministic events, this test should strictly enforce that checkout counts ≤ cart counts for every single session.
 
 ---
 
