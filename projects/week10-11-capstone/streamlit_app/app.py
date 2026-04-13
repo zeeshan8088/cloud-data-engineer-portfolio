@@ -2,13 +2,14 @@
 ============================================================
 RetailFlow - Streamlit Analytics Dashboard
 ============================================================
-Multi-page dashboard with 4 views:
+Multi-page dashboard with 5 views:
   1. Revenue Overview
   2. Customer Analytics
   3. Funnel Analysis
   4. Demand Forecast
+  5. Pipeline Lineage
 
-Data source: Google BigQuery (retailflow_gold + retailflow_predictions)
+Data source: Google BigQuery (retailflow_gold + retailflow_predictions + retailflow_metadata)
 Charts: Plotly
 ============================================================
 """
@@ -150,6 +151,7 @@ with st.sidebar:
             "Customer Analytics",
             "Funnel Analysis",
             "Demand Forecast",
+            "Pipeline Lineage",
         ],
         index=0,
         label_visibility="collapsed",
@@ -706,6 +708,136 @@ def page_demand_forecast():
 
 
 # ══════════════════════════════════════════════════════════════
+# PAGE 5: Pipeline Lineage
+# ══════════════════════════════════════════════════════════════
+def page_pipeline_lineage():
+    st.markdown('<div class="main-header">Pipeline Lineage</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="sub-header">End-to-end data lineage tracking across the RetailFlow pipeline</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── Fetch Lineage Data ───────────────────────────────────
+    lineage_query = f"""
+    SELECT
+        run_id,
+        task_name,
+        source_table,
+        target_table,
+        transform_type,
+        rows_in,
+        rows_out,
+        pipeline_run_id,
+        created_at
+    FROM `{PROJECT_ID}.retailflow_metadata.lineage`
+    ORDER BY created_at
+    """
+    lineage_df = run_query(lineage_query)
+
+    if lineage_df.empty:
+        st.warning("No lineage data available. Run scripts/log_lineage.py to populate.")
+        return
+
+    # ── KPI Metrics ──────────────────────────────────────────
+    total_rows_processed = int(lineage_df["rows_out"].sum())
+    total_hops = len(lineage_df)
+    unique_pipelines = lineage_df["pipeline_run_id"].nunique()
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.metric("Total Rows Processed", f"{total_rows_processed:,}")
+    with c2:
+        st.metric("Lineage Hops", f"{total_hops}")
+    with c3:
+        st.metric("Pipeline Runs", f"{unique_pipelines}")
+
+    st.markdown("")
+
+    # ── Sankey Diagram ───────────────────────────────────────
+    st.markdown("### Data Flow (Sankey)")
+
+    # Build unique node list
+    all_nodes = list(
+        dict.fromkeys(
+            lineage_df["source_table"].tolist() + lineage_df["target_table"].tolist()
+        )
+    )
+    node_indices = {name: idx for idx, name in enumerate(all_nodes)}
+
+    # Aggregate flows (sum rows_out per source->target pair)
+    flow_df = (
+        lineage_df.groupby(["source_table", "target_table"])
+        .agg(total_rows=pd.NamedAgg(column="rows_out", aggfunc="sum"))
+        .reset_index()
+    )
+
+    # Node colors — gradient palette across the pipeline
+    node_palette = [
+        "#667eea",  # blue-purple
+        "#764ba2",  # purple
+        "#f093fb",  # pink
+        "#48bb78",  # green
+        "#ed8936",  # orange
+        "#63b3ed",  # light blue
+        "#fc8181",  # red
+        "#a0aec0",  # gray
+    ]
+    node_colors = [node_palette[i % len(node_palette)] for i in range(len(all_nodes))]
+
+    # Link colors (semi-transparent version of source node color)
+    link_colors = []
+    for _, row in flow_df.iterrows():
+        src_idx = node_indices[row["source_table"]]
+        base = node_colors[src_idx].lstrip("#")
+        r, g, b = int(base[:2], 16), int(base[2:4], 16), int(base[4:6], 16)
+        link_colors.append(f"rgba({r},{g},{b},0.35)")
+
+    fig = go.Figure(go.Sankey(
+        arrangement="snap",
+        node=dict(
+            pad=25,
+            thickness=25,
+            line=dict(color="rgba(255,255,255,0.15)", width=1),
+            label=all_nodes,
+            color=node_colors,
+        ),
+        link=dict(
+            source=[node_indices[r["source_table"]] for _, r in flow_df.iterrows()],
+            target=[node_indices[r["target_table"]] for _, r in flow_df.iterrows()],
+            value=flow_df["total_rows"].tolist(),
+            color=link_colors,
+        ),
+    ))
+    fig.update_layout(
+        title="Pipeline Data Flow",
+        template=PLOTLY_TEMPLATE,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Inter", size=13, color=COLORS["text"]),
+        height=480,
+        margin=dict(l=30, r=30, t=55, b=30),
+    )
+    st.plotly_chart(fig, use_container_width=True, key="lineage_sankey")
+
+    # ── Lineage Table ────────────────────────────────────────
+    st.markdown("### Lineage Records")
+    display_df = lineage_df[[
+        "task_name", "source_table", "target_table",
+        "transform_type", "rows_in", "rows_out",
+        "pipeline_run_id", "created_at",
+    ]].copy()
+
+    st.dataframe(
+        display_df.style.format({
+            "rows_in": "{:,}",
+            "rows_out": "{:,}",
+        }),
+        use_container_width=True,
+        height=400,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
 # ROUTER
 # ══════════════════════════════════════════════════════════════
 if page == "Revenue Overview":
@@ -716,3 +848,5 @@ elif page == "Funnel Analysis":
     page_funnel_analysis()
 elif page == "Demand Forecast":
     page_demand_forecast()
+elif page == "Pipeline Lineage":
+    page_pipeline_lineage()
