@@ -1,0 +1,1 @@
+SELECT query, total_bytes_processed, total_slot_ms FROM `region-asia-south1.INFORMATION_SCHEMA.JOBS_BY_PROJECT` WHERE creation_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY) AND job_type = 'QUERY' AND state = 'DONE' ORDER BY total_bytes_processed DESC LIMIT 5

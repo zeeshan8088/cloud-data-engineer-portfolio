@@ -31,44 +31,39 @@
 <body>
   <div class='header'>
     <h1>📊 RetailFlow Data Quality Report</h1>
-    <p>Run ID: fe92532a-a74 | Generated: 2026-04-07 17:27 UTC</p>
+    <p>Run ID: 84f30fc2-fa1 | Generated: 2026-04-13 20:40 UTC</p>
   </div>
-  <div class='overall fail'>
-    ❌ Overall Result: SOME SUITES FAILED
+  <div class='overall pass'>
+    ✅ Overall Result: ALL SUITES PASSED
   </div>
   <div class='suite-card'>
-    <h2>❌ raw_orders_suite</h2>
+    <h2>✅ raw_orders_suite</h2>
     <div class='meta'>Table: <code>intricate-ward-459513-e1.retailflow_bronze.raw_orders</code></div>
     <div class='stats-grid'>
       <div class='stat-box'><div class='number neutral-num'>11</div><div class='label'>Total Checks</div></div>
-      <div class='stat-box'><div class='number pass-num'>7</div><div class='label'>Passed</div></div>
-      <div class='stat-box'><div class='number fail-num'>4</div><div class='label'>Failed</div></div>
-      <div class='stat-box'><div class='number fail-num'>63.6%</div><div class='label'>Pass Rate</div></div>
+      <div class='stat-box'><div class='number pass-num'>11</div><div class='label'>Passed</div></div>
+      <div class='stat-box'><div class='number fail-num'>0</div><div class='label'>Failed</div></div>
+      <div class='stat-box'><div class='number pass-num'>100.0%</div><div class='label'>Pass Rate</div></div>
     </div>
-    <div class='failures'>
-      <h3>Failed Expectations:</h3>
-      <pre>[
-  {
-    "type": "expect_column_values_to_be_between",
-    "column": "total_amount",
-    "detail": "1 values in 'total_amount' outside [0.01, 500000.0]"
-  },
-  {
-    "type": "expect_column_values_to_be_in_set",
-    "column": "status",
-    "detail": "1 values in 'status' not in allowed set. Examples: ['INVALID_STATUS']"
-  },
-  {
-    "type": "expect_column_values_to_not_be_null",
-    "column": "product_category",
-    "detail": "1 null values found in 'product_category'"
-  },
-  {
-    "type": "expect_column_values_to_be_in_set",
-    "column": "payment_method",
-    "detail": "1 values in 'payment_method' not in allowed set. Examples: ['bitcoin']"
-  }
-]</pre>
+  </div>
+  <div class='suite-card'>
+    <h2>✅ raw_customers_suite</h2>
+    <div class='meta'>Table: <code>intricate-ward-459513-e1.retailflow_bronze.raw_customers</code></div>
+    <div class='stats-grid'>
+      <div class='stat-box'><div class='number neutral-num'>11</div><div class='label'>Total Checks</div></div>
+      <div class='stat-box'><div class='number pass-num'>11</div><div class='label'>Passed</div></div>
+      <div class='stat-box'><div class='number fail-num'>0</div><div class='label'>Failed</div></div>
+      <div class='stat-box'><div class='number pass-num'>100.0%</div><div class='label'>Pass Rate</div></div>
+    </div>
+  </div>
+  <div class='suite-card'>
+    <h2>✅ raw_products_suite</h2>
+    <div class='meta'>Table: <code>intricate-ward-459513-e1.retailflow_bronze.raw_products</code></div>
+    <div class='stats-grid'>
+      <div class='stat-box'><div class='number neutral-num'>12</div><div class='label'>Total Checks</div></div>
+      <div class='stat-box'><div class='number pass-num'>12</div><div class='label'>Passed</div></div>
+      <div class='stat-box'><div class='number fail-num'>0</div><div class='label'>Failed</div></div>
+      <div class='stat-box'><div class='number pass-num'>100.0%</div><div class='label'>Pass Rate</div></div>
     </div>
   </div>
   <div class='footer'>

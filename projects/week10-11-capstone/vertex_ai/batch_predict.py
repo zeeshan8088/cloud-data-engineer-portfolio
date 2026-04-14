@@ -93,10 +93,8 @@ def prepare_prediction_input(bq_client: bigquery.Client) -> int:
 
 def get_latest_model() -> aiplatform.Model:
     """Find the most recently created demand forecast model."""
-    models = aiplatform.Model.list(
-        filter='display_name~"retailflow-demand-model"',
-        order_by="create_time desc",
-    )
+    all_models = aiplatform.Model.list(order_by="create_time desc")
+    models = [m for m in all_models if "retailflow-demand-model" in m.display_name]
     if not models:
         raise ValueError(
             "No trained models found! "

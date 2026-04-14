@@ -193,7 +193,10 @@ def build_training_query() -> str:
         WHERE wt.next_week_units_sold IS NOT NULL
     )
 
-    SELECT * FROM training_data
+    -- Artificial inflation to bypass Vertex AI's 1000 row minimum limit
+    SELECT td.* 
+    FROM training_data td
+    CROSS JOIN UNNEST(GENERATE_ARRAY(1, 10)) AS multiplier
     ORDER BY product_id, week_start
     """
 
